@@ -298,23 +298,31 @@ function saveSignatory(name, location) {
   let signatories = JSON.parse(localStorage.getItem('signatories') || '[]');
   
   const newSignatory = { name, location, date: new Date().toISOString() };
-  signatories.push(newSignatory);
   
+  // Add to local storage for immediate display
+  signatories.push(newSignatory);
   localStorage.setItem('signatories', JSON.stringify(signatories));
   
-  // Send to server - this would normally use an API endpoint
-  // For demonstration, we'll just log that in a real environment this would save to a server
-  console.log('In a production environment, this would save to a server API:', newSignatory);
+  // Send to Vercel API
+  const apiUrl = '/api/add-signatory';
   
-  // Note: In a real implementation, you would use fetch() to send this data to your server:
-  // fetch('/api/signatories', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify(newSignatory)
-  // })
-  // .then(response => response.json())
-  // .then(data => console.log('Success:', data))
-  // .catch(error => console.error('Error:', error));
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, location })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('Signature saved to database:', data);
+  })
+  .catch(error => {
+    console.error('Error saving signatory to database:', error);
+  });
 }
 
 // Load signatories from local storage and server
@@ -323,67 +331,68 @@ function loadSignatories() {
   
   if (!signatoriesList) return;
   
-  // First load from localStorage
-  let signatories = JSON.parse(localStorage.getItem('signatories') || '[]');
+  // First load locally stored signatories to show something immediately
+  let localSignatories = JSON.parse(localStorage.getItem('signatories') || '[]');
   
-  // Check if there's a signatories.json file we should load from
-  fetch('/data/signatories.json')
+  // If we have local signatories, display them right away
+  if (localSignatories.length > 0) {
+    displaySignatories(localSignatories);
+  }
+  
+  // Then fetch the full list from the Vercel API
+  const apiUrl = '/api/signatories';
+  
+  fetch(apiUrl)
     .then(response => {
       if (!response.ok) {
-        throw new Error('No server signatories found');
+        throw new Error('Network response was not ok');
       }
       return response.json();
     })
     .then(serverSignatories => {
-      // If we have no local signatories, use the server ones directly
-      if (signatories.length === 0) {
-        signatories = serverSignatories;
-        localStorage.setItem('signatories', JSON.stringify(signatories));
-      } else {
-        // Otherwise, merge server signatories with local ones, avoiding duplicates
-        const mergedSignatories = [...signatories];
+      if (serverSignatories && serverSignatories.length > 0) {
+        // Create a merged list of local and server signatories
+        let allSignatories = [...serverSignatories];
         
-        serverSignatories.forEach(serverSig => {
-          // Check if this signatory already exists in our local list
-          const exists = signatories.some(localSig => 
-            localSig.name === serverSig.name && localSig.location === serverSig.location
+        // Add any local signatories that aren't on the server yet
+        // (may happen if API call in saveSignatory failed)
+        localSignatories.forEach(localSig => {
+          // Check if this local signatory already exists in the server list
+          const exists = serverSignatories.some(serverSig => 
+            serverSig.name === localSig.name && serverSig.location === localSig.location
           );
           
           if (!exists) {
-            mergedSignatories.push(serverSig);
+            allSignatories.push(localSig);
           }
         });
         
-        // Update our working signatories array
-        signatories = mergedSignatories;
+        // Sort by date (newest first)
+        allSignatories.sort((a, b) => new Date(b.date) - new Date(a.date));
         
-        // Update local storage with merged list
-        localStorage.setItem('signatories', JSON.stringify(mergedSignatories));
+        // Update local storage with the complete list
+        localStorage.setItem('signatories', JSON.stringify(allSignatories));
+        
+        // Display the complete list
+        displaySignatories(allSignatories);
       }
-      
-      // Display the signatories
-      displaySignatories(signatories);
     })
     .catch(error => {
-      console.log('Error loading server signatories:', error);
+      console.error('Error fetching signatories from API:', error);
       
-      // If there are no signatories in localStorage or we couldn't load from server,
-      // add some example ones
-      if (signatories.length === 0) {
-        // Default example signatories
-        signatories = [
-          { name: 'Peter Müller', location: 'Zürich' },
-          { name: 'Sarah Schmid', location: 'Luzern' },
-          { name: 'Marc Weber', location: 'Basel' },
-          { name: 'Anna Frei', location: 'Bern' }
+      // If there's an error and no local signatories, show some example ones
+      if (localSignatories.length === 0) {
+        const exampleSignatories = [
+          { name: 'Peter Müller', location: 'Zürich', date: new Date().toISOString() },
+          { name: 'Sarah Schmid', location: 'Luzern', date: new Date().toISOString() },
+          { name: 'Marc Weber', location: 'Basel', date: new Date().toISOString() },
+          { name: 'Anna Frei', location: 'Bern', date: new Date().toISOString() }
         ];
         
-        // Save the examples to localStorage
-        localStorage.setItem('signatories', JSON.stringify(signatories));
+        // Save the examples to localStorage and display
+        localStorage.setItem('signatories', JSON.stringify(exampleSignatories));
+        displaySignatories(exampleSignatories);
       }
-      
-      // Display the signatories
-      displaySignatories(signatories);
     });
 }
 
