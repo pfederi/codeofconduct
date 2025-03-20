@@ -1,33 +1,5 @@
 // Vercel API route for fetching all signatories
-const { MongoClient } = require('mongodb');
-
-let cachedDb = null;
-
-// Connect to MongoDB
-async function connectToDatabase() {
-  if (cachedDb) {
-    return cachedDb;
-  }
-  
-  // Use the MongoDB connection string from environment variables
-  const uri = process.env.MONGODB_URI;
-  
-  if (!uri) {
-    throw new Error('Please define the MONGODB_URI environment variable in Vercel');
-  }
-  
-  const client = new MongoClient(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-  
-  await client.connect();
-  
-  const db = client.db(process.env.MONGODB_DB || 'pumpfoiling');
-  
-  cachedDb = db;
-  return db;
-}
+const { kv } = require('@vercel/kv');
 
 module.exports = async (req, res) => {
   // Set CORS headers
@@ -43,14 +15,11 @@ module.exports = async (req, res) => {
   
   if (req.method === 'GET') {
     try {
-      const db = await connectToDatabase();
-      const collection = db.collection('signatories');
+      // Get all signatories from Vercel KV
+      const signatories = await kv.get('signatories') || [];
       
-      // Get all signatories, sort by date (newest first)
-      const signatories = await collection.find({})
-        .sort({ date: -1 })
-        .limit(100) // Limit to 100 most recent signatories
-        .toArray();
+      // Sort by date (newest first)
+      signatories.sort((a, b) => new Date(b.date) - new Date(a.date));
       
       return res.status(200).json(signatories);
     } catch (error) {

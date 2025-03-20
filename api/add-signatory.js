@@ -1,33 +1,5 @@
 // Vercel API route for adding a new signatory
-const { MongoClient } = require('mongodb');
-
-let cachedDb = null;
-
-// Connect to MongoDB
-async function connectToDatabase() {
-  if (cachedDb) {
-    return cachedDb;
-  }
-  
-  // Use the MongoDB connection string from environment variables
-  const uri = process.env.MONGODB_URI;
-  
-  if (!uri) {
-    throw new Error('Please define the MONGODB_URI environment variable in Vercel');
-  }
-  
-  const client = new MongoClient(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-  
-  await client.connect();
-  
-  const db = client.db(process.env.MONGODB_DB || 'pumpfoiling');
-  
-  cachedDb = db;
-  return db;
-}
+const { kv } = require('@vercel/kv');
 
 module.exports = async (req, res) => {
   // Set CORS headers
@@ -50,11 +22,13 @@ module.exports = async (req, res) => {
         return res.status(400).json({ error: 'Name and location are required' });
       }
       
-      const db = await connectToDatabase();
-      const collection = db.collection('signatories');
+      // Get current signatories
+      let signatories = await kv.get('signatories') || [];
       
       // Check if this signatory already exists to avoid duplicates
-      const existingSignatory = await collection.findOne({ name, location });
+      const existingSignatory = signatories.find(s => 
+        s.name === name && s.location === location
+      );
       
       if (existingSignatory) {
         return res.status(409).json({ error: 'This signatory already exists' });
@@ -62,12 +36,15 @@ module.exports = async (req, res) => {
       
       // Add new signatory with timestamp
       const newSignatory = {
+        id: Date.now().toString(), // Simple unique ID
         name,
         location,
         date: new Date().toISOString()
       };
       
-      await collection.insertOne(newSignatory);
+      // Add to array and save back to KV
+      signatories.push(newSignatory);
+      await kv.set('signatories', signatories);
       
       return res.status(201).json(newSignatory);
     } catch (error) {
