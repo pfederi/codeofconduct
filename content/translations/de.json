@@ -1,0 +1,43 @@
+{
+  "nav_intro": "Intro",
+  "nav_conduct": "Code of Conduct",
+  "nav_supporters": "Unterstützer",
+  "nav_sign": "Unterzeichnen",
+  
+  "hero_title": "Pumpfoiling in der Schweiz",
+  "hero_text": "Eine Initiative für sicheres und respektvolles Pumpfoilen auf den Schweizer Gewässern.",
+  "hero_button": "Code of Conduct entdecken",
+  
+  "conduct_title": "Pumpfoilers Code of Conduct",
+  "conduct_intro": "Wir, die Gemeinschaft der Pumpfoiler in der Schweiz, sind uns bewusst, dass Pumpfoilen ein spannender und herausfordernder Sport ist, der Geschicklichkeit, Übung und Respekt vor dem Wasser und der Umwelt erfordert. Wir glauben, dass Sicherheit, Verantwortungsbewusstsein und guter Sportsgeist unerlässlich sind, um den Sport zu geniessen und uns selbst, andere und die Gewässer, auf denen wir diesen Sport ausüben, zu schützen.",
+  "conduct_pledge": "Deshalb verpflichten wir uns, die folgenden Grundsätze und Leitlinien zu befolgen.",   
+  "conduct_1_title": "Sicherheit zuerst",
+  "conduct_1_text": "Wir sind uns bewusst, dass das Pumfoiling gefährlich sein kann und dass Unfälle passieren können. Deshalb verpflichten wir uns, immer die richtige Sicherheitsausrüstung zu tragen, die wir für notwendig erachten.",
+  "conduct_2_title": "Respekt für die Umwelt",
+  "conduct_2_text": "Wir wissen, dass Wasser ein empfindliches und lebenswichtiges Ökosystem ist, das geschützt und erhalten werden muss. Daher verpflichten wir uns, die Umwelt zu respektieren und keine Abfälle, Verschmutzungen oder Störungen der Tier- und Pflanzenwelt zu verursachen.",
+  "conduct_3_title": "Verantwortungsvolles Verhalten",
+  "conduct_3_text": "Wir erkennen an, dass Pumpoiling mit Risiken verbunden ist und dass wir die Verantwortung für unser Handeln übernehmen müssen. Wir verpflichten uns daher, unsere Grenzen zu kennen, riskante Manöver und Situationen zu vermeiden und uns jederzeit unserer Umgebung bewusst zu sein.",
+  "conduct_4_title": "Rücksicht auf Andere",
+  "conduct_4_text": "Wir sind uns bewusst, dass wir das Wasser mit Schwimmern, Bootsfahrern und anderen Wassersportlern teilen. Daher verpflichten wir uns, anderen Wasserfahrzeugen auszuweichen, Schwimmern und anderen Wasserbenutzern nicht zu nahe zu kommen, Handzeichen oder andere Kommunikationsmittel zu verwenden, um andere auf unsere Bewegungen oder Absichten aufmerksam zu machen, und überfüllte Bereiche zu meiden.",
+  "conduct_5_title": "Einhaltung von Vorschriften",
+  "conduct_5_text": "Wir nehmen zur Kenntnis, dass das Pumpfoilen örtlichen Vorschriften oder Richtlinien unterliegen kann und verpflichten uns daher, alle anwendbaren Gesetze, Vorschriften oder Beschränkungen in Bezug auf das Pumpfoiling, einschliesslich Abstände zu Schiffen, ausgewiesene Zonen und andere Anforderungen, einzuhalten.",
+  "conduct_6_title": "Spass und Sportgeist",
+  "conduct_6_text": "Wir sind uns bewusst, dass der Sport auch Spass macht und eine soziale Aktivität ist, die uns als Gemeinschaft zusammenbringt. Deshalb verpflichten wir uns, den Sport mit Enthusiasmus, Respekt und gutem Sportsgeist auszuüben, andere Sportbegeisterte zu ermutigen und zu unterstützen und unser Wissen, unsere Fähigkeiten und unsere Leidenschaft für diesen Sport mit anderen zu teilen.",
+  "conduct_conclusion": "Durch die Übernahme dieser Grundsätze und Richtlinien glauben wir, dass wir Pumpfoiling als einen sicheren, verantwortungsvollen und nachhaltigen Sport fördern können, der das Wasser, die Umwelt und die Menschen respektiert, die unsere Liebe für diese einzigartige und spannende Aktivität teilen. Daher laden wir alle Pumpfoil-Enthusiasten ein, sich unserem Engagement für Sicherheit, Verantwortung und Sportsgeist anzuschliessen und uns zu helfen, die Botschaft des Pumpfoiling-Manifests an andere weiterzugeben, die sich für diesen Sport interessieren könnten.",
+  "conduct_conclusion_endnote": "Lasst uns mit Zuversicht, Respekt und Freude pumpfoilen!",
+  
+  "supporters_title": "Unterstützende Organisationen",
+  
+  "signatories_title": "Unterzeichner",
+  "sign_form_title": "Den Code of Conduct unterzeichnen",
+  "sign_form_name": "Name",
+  "sign_form_location": "Ort",
+  "sign_form_button": "Unterzeichnen",
+  
+  "footer_title": "Pumpfoilers Code of Conduct - Switzerland",
+  "footer_text": "Eine Initiative für sicheres und respektvolles Pumpfoilen in der Schweiz.",
+  "footer_initiative": "Eine Initiative von",
+  "footer_copyright": "Diese Arbeit ist lizenziert unter CC BY-NC-SA 4.0",
+  "footer_opensource": "Open-Source-Projekt auf",
+  "footer_languages": "Sprachen"
+} 

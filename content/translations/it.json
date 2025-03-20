@@ -1,0 +1,43 @@
+{
+  "nav_intro": "Intro",
+  "nav_conduct": "Codice di Condotta",
+  "nav_supporters": "Organizzazioni",
+  "nav_sign": "Firmare",
+  
+  "hero_title": "Pumpfoiling in Svizzera",
+  "hero_text": "Un'iniziativa per un pumpfoiling sicuro e rispettoso sulle acque svizzere.",
+  "hero_button": "Scopri il Codice di Condotta",
+  
+  "conduct_title": "Codice di Condotta dei Pumpfoilers",
+  "conduct_intro": "Noi, la comunità degli appassionati di pumpfoil in Svizzera, riconosciamo che il pumpfoiling è uno sport emozionante e impegnativo che richiede abilità, pratica e rispetto per l'acqua e l'ambiente. Crediamo che la sicurezza, la responsabilità e la sportività siano essenziali per godersi il pumpfoiling e proteggere noi stessi, gli altri e le vie d'acqua dove pratichiamo questo sport.",
+  "conduct_pledge": "Pertanto, ci impegniamo a seguire questi principi e linee guida ogni volta che pratichiamo il pumpfoil:",
+  "conduct_1_title": "Sicurezza Prima di Tutto",
+  "conduct_1_text": "Siamo consapevoli che il pumpfoiling può essere pericoloso e che gli incidenti possono accadere, quindi ci impegniamo a indossare sempre l'attrezzatura di sicurezza adeguata che riteniamo necessaria.",
+  "conduct_2_title": "Rispetto per l'Ambiente",
+  "conduct_2_text": "Proteggiamo e preserviamo l'acqua come ecosistema fragile e vitale ed evitiamo l'inquinamento.",
+  "conduct_3_title": "Comportamento Responsabile",
+  "conduct_3_text": "Conosciamo i nostri limiti, evitiamo manovre rischiose e rimaniamo sempre vigili.",
+  "conduct_4_title": "Considerazione per gli Altri",
+  "conduct_4_text": "Rimaniamo lontani dagli altri sportivi acquatici e dai nuotatori ed evitiamo le aree affollate.",
+  "conduct_5_title": "Conformità alle Normative",
+  "conduct_5_text": "Rispettiamo tutte le leggi, le regole e le restrizioni applicabili riguardanti il pumpfoiling.",
+  "conduct_6_title": "Divertimento e Sportività",
+  "conduct_6_text": "Pratichiamo il pumpfoiling con entusiasmo, rispetto e fair play.",
+  "conduct_conclusion": "Adottando questi principi e queste linee guida, crediamo di poter promuovere il pumpfoiling come uno sport sicuro, responsabile e sostenibile che rispetta l'acqua, l'ambiente e le persone che condividono il nostro amore per questa attività unica ed emozionante. Pertanto, invitiamo tutti gli appassionati di pumpfoil a unirsi al nostro impegno per la sicurezza, la responsabilità e la buona sportività, e ad aiutarci a diffondere il messaggio del Manifesto del Pumpfoiling ad altri che potrebbero essere interessati a questo sport.",
+  "conduct_conclusion_endnote": "Pratichiamo il pumpfoiling con fiducia, rispetto e gioia!",
+  
+  "supporters_title": "Organizzazioni di Supporto",
+  
+  "signatories_title": "Firmatari",
+  "sign_form_title": "Firma il Codice di Condotta",
+  "sign_form_name": "Nome",
+  "sign_form_location": "Località",
+  "sign_form_button": "Firma",
+  
+  "footer_title": "Codice di Condotta dei Pumpfoilers - Svizzera",
+  "footer_text": "Un'iniziativa per un pumpfoiling sicuro e rispettoso in Svizzera.",
+  "footer_initiative": "Un'iniziativa di",
+  "footer_copyright": "Quest'opera è sotto licenza CC BY-NC-SA 4.0",
+  "footer_opensource": "Progetto open source su",
+  "footer_languages": "Lingue"
+} 
