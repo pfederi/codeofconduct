@@ -3,13 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pumpfoilers Code of Conduct - Eine Initiative für sicheres und respektvolles Pumpfoilen in der Schweiz">
   <title>Pumpfoilers Code of Conduct - Switzerland</title>
-  <link rel="stylesheet" href="/src/scss/style.scss">
+
+  <link rel="icon" href="./pfc-logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/scss/style.scss">
+  <script type="module" src="./src/js/main.js"></script>
+  <!-- Google reCAPTCHA v3 -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
-<body class="vertical-rhythm">
+<body>
   <div class="cursor"></div>
   <div class="mobile-menu-overlay"></div>
   
@@ -48,11 +54,31 @@
       <!-- Image Slider -->
       <div class="slider">
         <!-- Diese Platzhalterbilder werden später durch echte Bilder ersetzt -->
-        <div class="slide active" style="background-image: url('/images/hero-1.jpg')"></div>
-        <div class="slide" style="background-image: url('/images/hero-2.jpg')"></div>
-        <div class="slide" style="background-image: url('/images/hero-3.jpg')"></div>
-        <div class="slide" style="background-image: url('/images/hero-4.jpg')"></div>
-        <div class="slide" style="background-image: url('/images/hero-5.jpg')"></div>
+        <div class="slide active" style="background-image: url('./images/hero-1.jpg')">
+          <div class="slide-caption">
+            <p>Rider: Patrick | Photo: Naomi Shepherd</p>
+          </div>
+        </div>
+        <div class="slide" style="background-image: url('./images/hero-2.jpg')">
+          <div class="slide-caption">
+            <p>Rider: Yvon | Photo: Patrick Federi</p>
+          </div>
+        </div>
+        <div class="slide" style="background-image: url('./images/hero-3.jpg')">
+          <div class="slide-caption">
+            <p>Rider: Sarah | Photo: Sorin Radu</p>
+          </div>
+        </div>
+        <div class="slide" style="background-image: url('./images/hero-4.jpg')">
+          <div class="slide-caption">
+            <p>Rider: Res | Photo: Patrick Federi</p>
+          </div>
+        </div>
+        <div class="slide" style="background-image: url('./images/hero-5.jpg')">
+          <div class="slide-caption">
+            <p>Rider: Naomi | Photo: Patrick Federi</p>
+          </div>
+        </div>
       </div>
       
       <!-- Gradient Overlay -->
@@ -211,25 +237,31 @@
           <!-- Indiana Paddlesurf -->
           <div class="supporter-logo reveal-item">
             <a href="https://indiana-paddlesurf.com" target="_blank">
-              <img src="/images/supporters/indiana-logo.png" alt="Indiana Paddlesurf Logo">
+              <img src="./images/supporters/indiana-logo.png" alt="Indiana Paddlesurf Logo">
             </a>
           </div>
           <!-- Swiss Foiling -->
           <div class="supporter-logo reveal-item">
             <a href="https://www.swiss-foiling.ch" target="_blank">
-              <img src="/images/supporters/swiss-foiling-logo.svg" alt="Swiss Foiling Logo">
+              <img src="./images/supporters/swiss-foiling-logo.svg" alt="Swiss Foiling Logo">
             </a>
           </div>
           <!-- Ensis -->
           <div class="supporter-logo reveal-item">
             <a href="https://ensis.surf" target="_blank">
-              <img src="/images/supporters/ensis-logo.png" alt="Ensis Logo">
+              <img src="./images/supporters/ensis-logo.png" alt="Ensis Logo">
             </a>
           </div>
           <!-- Flatwatersquad -->
           <div class="supporter-logo reveal-item">
             <a href="https://www.instagram.com/flatwatersquad/" target="_blank">
-              <img src="/images/supporters/flatwatersquad-logo.png" alt="Flatwatersquad Logo">
+              <img src="./images/supporters/flatwatersquad-logo.png" alt="Flatwatersquad Logo">
+            </a>
+          </div>
+          <!-- Foil Club Zürichsee -->
+          <div class="supporter-logo reveal-item">
+            <a href="https://foilclubzurichsee.ch/" target="_blank">
+              <img src="./images/supporters/logo-foilclub-zuerichsee.png" alt="Foil Club Zürichsee Logo">
             </a>
           </div>
         </div>
@@ -239,20 +271,33 @@
     <section class="signatories" id="sign">
       <div class="container">
         <h2 class="section-title reveal-text" data-i18n="signatories_title">Unterzeichner</h2>
+        <div class="signature-counter-container reveal-text">
+          <span class="signature-counter">0</span>
+          <span class="signature-counter-text" data-i18n="signature_counter_text">Unterzeichner</span>
+        </div>
         <div class="signatories-list" id="signatories-list">
-          <!-- Will be populated via JavaScript -->
+          <!-- Signatories will be loaded from Firestore database -->
+          <div class="loading">Signatories laden...</div>
         </div>
         <div class="sign-form">
           <h3 class="reveal-text" data-i18n="sign_form_title">Den Code of Conduct unterzeichnen</h3>
-          <form id="signature-form" class="reveal-item">
+          <form id="sign-form" class="reveal-item">
             <div class="form-group">
               <label for="name" data-i18n="sign_form_name">Name</label>
-              <input type="text" id="name" name="name" required>
+              <input type="text" id="name" name="name" required autocomplete="name">
             </div>
             <div class="form-group">
               <label for="location" data-i18n="sign_form_location">Ort</label>
-              <input type="text" id="location" name="location" required>
+              <input type="text" id="location" name="location" required autocomplete="address-level2">
             </div>
+            <!-- Honeypot field for spam protection -->
+            <div class="form-group" style="display:none">
+              <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+            </div>
+            <!-- Hidden timestamp field for spam protection -->
+            <input type="hidden" id="timestamp" name="timestamp">
+            <!-- Google reCAPTCHA v3 -->
+            <div class="g-recaptcha" data-sitekey="6LevlvsqAAAAAFcvk8jC7vbci8FJHnhhXNTLr3Dq" data-callback="onCaptchaComplete" data-size="invisible"></div>
             <button type="submit" class="btn btn-primary" data-i18n="sign_form_button">Unterzeichnen</button>
           </form>
         </div>
@@ -269,7 +314,7 @@
           <div class="footer-initiative">
             <p class="initiative-text" data-i18n="footer_initiative">Eine Initiative von</p>
             <a href="https://pumpfoiling.community" target="_blank" class="pfc-logo">
-              <img src="/pfc-logo.png" alt="Pumpfoiling Community Logo" width="160">
+              <img src="./pfc-logo.png" alt="Pumpfoiling Community Logo" width="160">
             </a>
           </div>
           <p class="copyright" data-i18n="footer_copyright">Diese Arbeit ist lizenziert unter CC BY-NC-SA 4.0</p>
