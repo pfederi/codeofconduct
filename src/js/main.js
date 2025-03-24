@@ -343,7 +343,15 @@ function initForm() {
   const form = document.querySelector('#sign-form');
   const signatoriesList = document.querySelector('#signatories-list');
   
-  if (!form || !signatoriesList) return;
+  if (!form) {
+    console.log('Form not found');
+    return;
+  }
+  
+  if (!signatoriesList) {
+    console.log('Signatories list not found');
+    return;
+  }
   
   // Spam protection: Track submissions per session
   const submissionCount = parseInt(sessionStorage.getItem('submissionCount') || '0');
@@ -407,14 +415,12 @@ function initForm() {
     const name = nameInput.value.trim();
     const location = locationInput.value.trim();
     
-    // Spam protection: Additional validation
-    // ... existing code ...
-    
-    // Spam protection: Check for suspicious patterns
-    // ... existing code ...
-    
     // Display loading state
     const submitButton = form.querySelector('button[type="submit"]');
+    if (!submitButton) {
+      console.error('Submit button not found');
+      return false;
+    }
     const originalText = submitButton.textContent || 'Unterzeichnen';
     submitButton.disabled = true;
     submitButton.textContent = 'Speichern...';
@@ -446,11 +452,6 @@ function initForm() {
       processFormSubmission(form, name, location, submitButton, originalText, signatoriesList);
       recaptchaComplete = false; // Reset for next submission
     }
-    
-    /* Auskommentierter Code für lokale Entwicklung (ohne reCAPTCHA)
-    // Überspringe reCAPTCHA und verarbeite das Formular direkt
-    processFormSubmission(form, name, location, submitButton, originalText, signatoriesList);
-    */
   });
 }
 
