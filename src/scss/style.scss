@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // Variables
 $primary-color: #304269; // Dunkelblau
 $secondary-color: #91BED4; // Mittelblau
@@ -634,7 +636,7 @@ a {
   
   .supporters-grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 3.2rem;
     
     @media (max-width: 992px) {
@@ -732,7 +734,7 @@ a {
     
     .error-message {
       border-left: 3px solid $accent-color;
-      color: darken($accent-color, 10%);
+      color: color.adjust($accent-color, $lightness: -10%);
     }
     
     .no-signatories {
