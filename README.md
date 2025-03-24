@@ -84,7 +84,7 @@ For production use (not in local development mode), the Google reCAPTCHA v3 spam
 1. Go to [Google reCAPTCHA Admin](https://www.google.com/recaptcha/admin)
 2. Register your domain
 3. Choose "reCAPTCHA v3" as the reCAPTCHA type
-4. Add your domain(s) (e.g., `codeofconduct.pumpfoiling.community`)
+4. Add your domain(s) (e.g., `responsible.pumpfoiling.community`)
 5. Copy the generated Site Key
 6. Replace the reCAPTCHA Site Key in the `dist/index.html` file:
    ```html
