@@ -23,9 +23,14 @@ Visit our community: https://pumpfoiling.community
 
 ### Installation
 
-1. Clone repository or download files
-2. Install dependencies:
+1. Repository initialisieren:
+```bash
+git init
+git remote add origin https://github.com/pfederi/codeofconduct.git
+git pull origin main
+```
 
+2. Dependencies installieren:
 ```bash
 npm install
 ```
@@ -50,19 +55,20 @@ The output files will be in the `dist` directory.
 
 ### Local Development
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/pfederi/codeofconduct.git
-   cd codeofconduct
+1. Repository initialisieren:
+   ```bash
+   git init
+   git remote add origin https://github.com/pfederi/codeofconduct.git
+   git pull origin main
    ```
 
 2. Install dependencies:
-   ```
+   ```bash
    npm install
    ```
 
 3. Start the development server:
-   ```
+   ```bash
    npm run dev
    ```
 
