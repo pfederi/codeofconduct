@@ -23,11 +23,23 @@ Visit our community: https://pumpfoiling.community
 
 ### Installation
 
-1. Repository initialisieren:
+1. Repository vorbereiten:
 ```bash
+# Initialisiere ein neues Git Repository
 git init
+
+# Füge die Remote-URL hinzu
 git remote add origin https://github.com/pfederi/codeofconduct.git
-git pull origin main
+
+# Erstelle einen initialen Commit mit allen Dateien
+git add .
+git commit -m "Initial commit"
+
+# Setze den Branch auf 'main'
+git branch -M main
+
+# Push zum Remote Repository
+git push -u origin main
 ```
 
 2. Dependencies installieren:
@@ -55,11 +67,23 @@ The output files will be in the `dist` directory.
 
 ### Local Development
 
-1. Repository initialisieren:
+1. Repository vorbereiten:
    ```bash
+   # Initialisiere ein neues Git Repository
    git init
+
+   # Füge die Remote-URL hinzu
    git remote add origin https://github.com/pfederi/codeofconduct.git
-   git pull origin main
+
+   # Erstelle einen initialen Commit mit allen Dateien
+   git add .
+   git commit -m "Initial commit"
+
+   # Setze den Branch auf 'main'
+   git branch -M main
+
+   # Push zum Remote Repository
+   git push -u origin main
    ```
 
 2. Install dependencies:
@@ -77,7 +101,7 @@ The output files will be in the `dist` directory.
 ### Create Production Build
 
 1. Create a build:
-   ```
+   ```bash
    npm run build
    ```
 
@@ -179,17 +203,17 @@ After building, the application can be deployed on a web server of your choice:
 Alternatively, you can use Firebase Hosting for easy deployment:
 
 1. Install Firebase CLI:
-   ```
+   ```bash
    npm install -g firebase-tools
    ```
 
 2. Log in to Firebase:
-   ```
+   ```bash
    firebase login
    ```
 
 3. Initialize project:
-   ```
+   ```bash
    firebase init
    ```
    - Choose "Hosting"
@@ -199,7 +223,7 @@ Alternatively, you can use Firebase Hosting for easy deployment:
    - Overwrite `dist/index.html`: No
 
 4. Deploy to Firebase:
-   ```
+   ```bash
    firebase deploy
    ```
 
