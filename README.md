@@ -4,6 +4,17 @@ The Pumpfoilers Code of Conduct establishes guidelines for safe and respectful p
 
 🌊 [Join our Community](https://pumpfoiling.community)
 
+## Adapt for Your Country
+
+We encourage pumpfoiling communities worldwide to adapt this Code of Conduct for their local needs. The entire codebase is designed to be easily customizable:
+
+- **Multilingual**: Simply add your language files
+- **Content**: Modify the Code of Conduct text for your region
+- **Branding**: Adjust colors and design to match your community
+- **Hosting**: Set up your own Firebase instance or use any hosting service
+
+Feel free to fork this repository and create your own version. We believe in sharing knowledge and promoting safety across the global pumpfoiling community.
+
 ## Technical Implementation
 
 Our web application is built with modern technologies and best practices:
