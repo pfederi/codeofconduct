@@ -1,0 +1,46 @@
+{
+  "nav_intro": "Intro",
+  "nav_conduct": "Code de Conduite",
+  "nav_supporters": "Organisations",
+  "nav_sign": "Signer",
+  
+  "hero_title": "Pumpfoiling en Suisse",
+  "hero_text": "Une initiative pour un pumpfoiling sûr et respectueux sur les eaux suisses.",
+  "hero_button": "Découvrir le Code de Conduite",
+  
+  "conduct_title": "Code de conduite des pumpfoilers",
+  "conduct_intro": "Nous – la communauté suisse de pumpfoil – reconnaissons que le pumpfoiling est un sport passionnant et exigeant, qui demande des compétences, de la pratique et du respect pour l'eau et l'environnement. La sécurité, la responsabilité et l'esprit sportif sont essentiels pour profiter de ce sport tout en protégeant notre environnement, nous-mêmes et les autres.",
+  "conduct_pledge": "C'est pourquoi nous nous engageons à suivre ces principes et lignes directrices chaque fois que nous faisons du pumpfoil :",
+  "conduct_1_title": "La sécurité avant tout",
+  "conduct_1_text": "Nous plaçons la sécurité au premier plan – pour nous-mêmes et pour les autres. Cela signifie être conscient de notre environnement, adapter notre comportement aux conditions, et choisir les spots et les manœuvres de manière responsable afin d'éviter les situations dangereuses.",
+  "conduct_2_title": "Respect de l'environnement",
+  "conduct_2_text": "Nous respectons l'eau en tant qu'écosystème fragile et nous engageons à la protéger en évitant les déchets, la pollution et les perturbations de la faune.",
+  "conduct_3_title": "Comportement responsable",
+  "conduct_3_text": "Nous assumons la responsabilité de notre comportement sur l'eau. Cela inclut le respect des autres, une attitude bienveillante, et la conscience que notre comportement influence la perception publique du pumpfoiling.",
+  "conduct_4_title": "Respect des autres",
+  "conduct_4_text": "Nous respectons les autres usagers de l'eau et nous engageons à garder une distance de sécurité avec les nageurs et les embarcations, à utiliser des signaux clairs pour communiquer et à attendre notre tour lorsque l'eau est très fréquentée.",
+  "conduct_5_title": "Respect des réglementations",
+  "conduct_5_text": "Nous sommes conscients que le pumpfoiling peut être soumis à des réglementations locales. Nous nous efforçons de nous informer et d'agir de manière respectueuse envers les conditions locales et les communautés.",
+  "conduct_6_title": "Plaisir et esprit sportif",
+  "conduct_6_text": "Nous vivons le pumpfoiling comme une activité amusante et sociale qui unit notre communauté. Nous nous engageons à le pratiquer avec enthousiasme, respect et fair-play – en soutenant les autres et en partageant nos connaissances et notre passion.",
+  "conduct_conclusion_part1": "En vivant ces principes, nous promouvons le pumpfoiling comme un sport sûr, responsable et durable qui respecte l'eau, l'environnement et nos semblables. Nous invitons tous les pumpfoilers à adhérer à ce code et à diffuser le Code de Conduite du Pumpfoiling.",
+  "conduct_conclusion_part2": "Si quelqu'un est dérangé par notre comportement ou nous approche, nous restons ouverts, respectueux et cherchons la conversation directe – cela crée de la compréhension et une bonne coopération sur l'eau.",
+  "conduct_conclusion_endnote": "Faisons du pumpfoil avec confiance, respect et plaisir !",
+  
+  "supporters_title": "Organisations de Soutien",
+  
+  "signatories_title": "Signataires",
+  "signature_counter_text": "Signatures",
+  "sign_form_title": "Signer le Code de Conduite",
+  "sign_form_name": "Nom",
+  "sign_form_location": "Lieu",
+  "sign_form_button": "Signer",
+  "load_more_button": "Charger plus",
+  
+  "footer_title": "Code de Conduite des Pumpfoilers - Suisse",
+  "footer_text": "Une initiative pour un pumpfoiling sûr et respectueux en Suisse.",
+  "footer_initiative": "Une initiative de",
+  "footer_copyright": "Cette œuvre est sous licence CC BY-NC-SA 4.0",
+  "footer_opensource": "Projet open source sur",
+  "footer_languages": "Langues"
+} 

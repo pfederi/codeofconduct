@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pumpfoilers Code of Conduct - Eine Initiative für sicheres und respektvolles Pumpfoilen in der Schweiz">
+  <title>Pumpfoilers Code of Conduct - Switzerland</title>
+
+  <link rel="icon" href="./src/images/logos/pfc-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/scss/style.scss">
+  <script type="module" src="./src/js/main.js"></script>
+  <!-- Google reCAPTCHA v3 -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+  <div class="cursor"></div>
+  <div class="mobile-menu-overlay"></div>
+  
+  <header class="header">
+    <div class="container">
+      <h1 class="site-title"><span>Pumpfoilers</span><span>Code of Conduct</span></h1>
+      <div class="header-nav">
+        <button class="mobile-menu-toggle">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+        <nav class="main-nav">
+          <ul>
+            <li><a href="#intro" data-scroll data-i18n="nav_intro">Intro</a></li>
+            <li><a href="#conduct" data-scroll data-i18n="nav_conduct">Code of Conduct</a></li>
+            <li><a href="#supporters" data-scroll data-i18n="nav_supporters">Unterstützer</a></li>
+            <li><a href="#sign" data-scroll data-i18n="nav_sign">Unterzeichnen</a></li>
+          </ul>
+        </nav>
+        <div class="language-switcher">
+          <button class="current-lang">DE</button>
+          <ul class="lang-dropdown">
+            <li data-lang="en">EN</li>
+            <li data-lang="de">DE</li>
+            <li data-lang="fr">FR</li>
+            <li data-lang="it">IT</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="intro">
+      <!-- Image Slider -->
+      <div class="slider">
+        <!-- Diese Platzhalterbilder werden später durch echte Bilder ersetzt -->
+        <div class="slide active" style="background-image: url('./src/images/hero/hero-1.jpg')">
+          <div class="slide-caption">
+            <p>Rider: Patrick | Photo: Naomi Shepherd</p>
+          </div>
+        </div>
+        <div class="slide" style="background-image: url('./src/images/hero/hero-2.jpg')">
+          <div class="slide-caption">
+            <p>Rider: Alex | Photo: Patrick Federi</p>
+          </div>
+        </div>
+        <div class="slide" style="background-image: url('./src/images/hero/hero-3.jpg')">
+          <div class="slide-caption">
+            <p>Rider: Sarah | Photo: Sorin Radu</p>
+          </div>
+        </div>
+        <div class="slide" style="background-image: url('./src/images/hero/hero-4.jpg')">
+          <div class="slide-caption">
+            <p>Rider: Res | Photo: Patrick Federi</p>
+          </div>
+        </div>
+        <div class="slide" style="background-image: url('./src/images/hero/hero-5.jpg')">
+          <div class="slide-caption">
+            <p>Rider: Naomi | Photo: Patrick Federi</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Gradient Overlay -->
+      <div class="slider-overlay"></div>
+      
+      <div class="container">
+        <div class="hero-content">
+          <h2 class="reveal-text" data-i18n="hero_title">Pumpfoiling<br>in Switzerland</h2>
+          <p class="reveal-text" data-i18n="hero_text">Eine Initiative für sicheres und respektvolles Pumpfoilen auf den Schweizer Gewässern.</p>
+          <a href="#conduct" class="btn btn-primary" data-scroll data-i18n="hero_button">Code of Conduct entdecken</a>
+        </div>
+      </div>
+      
+      <!-- Slider Navigation -->
+      <div class="slider-controls">
+        <div class="dot active" data-slide="0"></div>
+        <div class="dot" data-slide="1"></div>
+        <div class="dot" data-slide="2"></div>
+        <div class="dot" data-slide="3"></div>
+        <div class="dot" data-slide="4"></div>
+      </div>
+    </section>
+
+    <section class="conduct" id="conduct">
+      <div class="container">
+        <h2 class="section-title reveal-text" data-i18n="conduct_title">Pumpfoilers Code of Conduct</h2>
+        <p class="conduct-intro reveal-text" data-i18n="conduct_intro">We, the community of pumpfoil enthusiasts in Switzerland, recognize that pumpfoiling is an exhilarating and challenging sport that requires skill, practice, and respect for the water and the environment. We believe that safety, responsibility, and good sportsmanship are essential for enjoying pumpfoiling and protecting ourselves, others, and the waterways where we practice this sport.</p>
+        <p class="conduct-pledge reveal-text" data-i18n="conduct_pledge">Therefore, we pledge to follow these principles and guidelines whenever we pumpfoil:</p>
+        <div class="conduct-grid">
+          <div class="conduct-item reveal-item">
+            <div class="conduct-number">01</div>
+            <h3 data-i18n="conduct_1_title">Sicherheit zuerst</h3>
+            <p data-i18n="conduct_1_text">Wir tragen die notwendige Sicherheitsausrüstung und achten stets auf unsere eigene Sicherheit sowie die anderer Wassersportler.</p>
+            <div class="conduct-icon">
+              <svg width="240" height="240" viewBox="0 0 120 114" fill="none" xmlns="http://www.w3.org/2000/svg" class="svg-icon safety-icon">
+                <g clip-path="url(#clip0_16_209)">
+                <path d="M51.2352 42.615C53.7105 40.86 56.7348 39.8285 60 39.8285C63.2653 39.8285 66.2896 40.86 68.7649 42.615C68.8166 42.5524 68.8718 42.4917 68.9303 42.4332L81.7497 29.6138C75.9033 24.6003 68.3055 21.5714 60.0001 21.5714C51.6946 21.5714 44.0966 24.6003 38.2504 29.6138L51.0698 42.4332C51.1283 42.4917 51.1835 42.5524 51.2352 42.615Z" fill="#006781" fill-opacity="0.2"/>
+                <path d="M68.765 67.385C66.2896 69.14 63.2654 70.1715 60.0001 70.1715C56.7349 70.1715 53.7106 69.14 51.2353 67.385C51.1835 67.4475 51.1284 67.5082 51.0698 67.5668L38.2504 80.3862C44.0966 85.3999 51.6946 88.4286 60.0001 88.4286C68.3055 88.4286 75.9038 85.3994 81.7496 80.3862L68.9304 67.5668C68.8718 67.5083 68.8167 67.4476 68.765 67.385Z" fill="#006781" fill-opacity="0.2"/>
+                <path class="draw-stroke" d="M59.9999 70.1713C68.3789 70.1713 75.1713 63.3789 75.1713 54.9999C75.1713 46.621 68.3789 39.8285 59.9999 39.8285C51.621 39.8285 44.8285 46.621 44.8285 54.9999C44.8285 63.3789 51.621 70.1713 59.9999 70.1713Z" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M60 88.4286C78.4623 88.4286 93.4286 73.4623 93.4286 55C93.4286 36.5379 78.4623 21.5714 60 21.5714C41.5379 21.5714 26.5714 36.5379 26.5714 55C26.5714 73.4623 41.5379 88.4286 60 88.4286Z" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M88.2857 26.7142L70.7486 44.2514" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M31.7143 26.7142L49.2514 44.2514" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M31.7143 83.2857L49.2514 65.7485" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M88.2857 83.2857L70.7486 65.7485" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+                <defs>
+                <clipPath id="clip0_16_209">
+                <rect width="72" height="72" fill="white" transform="translate(24 19)"/>
+                </clipPath>
+                </defs>
+              </svg>
+            </div>
+          </div>
+          <div class="conduct-item reveal-item">
+            <div class="conduct-number">02</div>
+            <h3 data-i18n="conduct_2_title">Respekt für die Umwelt</h3>
+            <p data-i18n="conduct_2_text">Wir schützen und bewahren das Wasser als fragiles und lebenswichtiges Ökosystem und vermeiden Verschmutzung.</p>
+            <div class="conduct-icon">
+              <svg width="240" height="240" viewBox="0 0 120 114" fill="none" xmlns="http://www.w3.org/2000/svg" class="svg-icon respect-icon">
+                <rect width="120" height="114" fill="white"/>
+                <g clip-path="url(#clip0_16_210)">
+                <path class="draw-stroke" d="M26.5714 55C26.5714 46.1342 30.0933 37.6315 36.3624 31.3624C42.6315 25.0933 51.1342 21.5714 60 21.5714C68.8658 21.5714 77.3684 25.0933 83.6376 31.3624C89.9067 37.6315 93.4286 46.1342 93.4286 55" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M29.4 68.4229C30.4231 70.8035 31.7358 73.0489 33.3085 75.1086C34.7982 77.1714 36.5243 79.0526 38.4514 80.7143" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M90.8572 68.4229C89.8337 70.8035 88.5213 73.0489 86.9486 75.1086C85.4587 77.1714 83.7328 79.0526 81.8057 80.7143" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M52.2857 87.5542C57.3625 88.7206 62.6375 88.7206 67.7143 87.5542" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M72.2399 60.5543C72.2399 53.6629 59.9999 37 59.9999 37C59.9999 37 47.3484 53.6629 47.3484 60.5543C47.3484 63.8551 48.6597 67.0207 50.9937 69.3547C53.3277 71.6886 56.4933 73 59.7942 73C63.095 73 66.2606 71.6886 68.5946 69.3547C70.9286 67.0207 72.2399 63.8551 72.2399 60.5543Z" fill="#006781" fill-opacity="0.2" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+                <defs>
+                <clipPath id="clip0_16_210">
+                <rect width="72" height="72" fill="white" transform="translate(24 19)"/>
+                </clipPath>
+                </defs>
+              </svg>
+            </div>
+          </div>
+          <div class="conduct-item reveal-item">
+            <div class="conduct-number">03</div>
+            <h3 data-i18n="conduct_3_title">Verantwortungsvolles Verhalten</h3>
+            <p data-i18n="conduct_3_text">Wir kennen unsere Grenzen, vermeiden riskante Manöver und bleiben stets aufmerksam.</p>
+            <div class="conduct-icon">
+              <svg width="240" height="240" viewBox="0 0 120 114" fill="none" xmlns="http://www.w3.org/2000/svg" class="svg-icon responsible-icon">
+                <rect width="120" height="114" fill="white"/>
+                <path class="draw-stroke" d="M60 42.1428C65.6807 42.1428 70.2857 37.5378 70.2857 31.8571C70.2857 26.1765 65.6807 21.5714 60 21.5714C54.3194 21.5714 49.7143 26.1765 49.7143 31.8571C49.7143 37.5378 54.3194 42.1428 60 42.1428Z" fill="#006781" fill-opacity="0.2"/>
+                <path class="draw-stroke" d="M82.0114 67.0343C82.9778 66.1166 83.7471 65.0119 84.2733 63.7874C84.7989 62.5629 85.0704 61.2442 85.0704 59.9115C85.0704 58.5788 84.7989 57.2601 84.2733 56.0356C83.7471 54.8111 82.9778 53.7063 82.0114 52.7886C80.0335 50.9112 77.4101 49.8645 74.6829 49.8645C71.9556 49.8645 69.3324 50.9112 67.3543 52.7886L60 60.1429L52.6457 52.7886C50.6676 50.9112 48.0444 49.8645 45.3171 49.8645C42.5899 49.8645 39.9667 50.9112 37.9886 52.7886C37.0222 53.7063 36.2527 54.8111 35.7268 56.0356C35.201 57.2601 34.9298 58.5788 34.9298 59.9115C34.9298 61.2442 35.201 62.5629 35.7268 63.7874C36.2527 65.0119 37.0222 66.1166 37.9886 67.0343L60 88.4286L82.0114 67.0343Z" fill="#006781" fill-opacity="0.2"/>
+                <path class="draw-stroke" d="M82.0114 67.0343C82.9778 66.1166 83.7471 65.0119 84.2733 63.7874C84.7989 62.5628 85.0704 61.2441 85.0704 59.9114C85.0704 58.5788 84.7989 57.2601 84.2733 56.0355C83.7471 54.811 82.9778 53.7063 82.0114 52.7886C80.0335 50.9112 77.4101 49.8645 74.6829 49.8645C71.9556 49.8645 69.3324 50.9112 67.3543 52.7886L60 60.1429L52.6457 52.7886C50.6676 50.9112 48.0444 49.8645 45.3171 49.8645C42.5899 49.8645 39.9667 50.9112 37.9886 52.7886C37.0222 53.7063 36.2527 54.811 35.7268 56.0355C35.201 57.2601 34.9298 58.5788 34.9298 59.9114C34.9298 61.2441 35.201 62.5628 35.7268 63.7874C36.2527 65.0119 37.0222 66.1166 37.9886 67.0343L60 88.4286L82.0114 67.0343Z" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M60 42.1428C65.6807 42.1428 70.2857 37.5378 70.2857 31.8571C70.2857 26.1765 65.6807 21.5714 60 21.5714C54.3194 21.5714 49.7143 26.1765 49.7143 31.8571C49.7143 37.5378 54.3194 42.1428 60 42.1428Z" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="conduct-item reveal-item">
+            <div class="conduct-number">04</div>
+            <h3 data-i18n="conduct_4_title">Rücksicht auf Andere</h3>
+            <p data-i18n="conduct_4_text">Wir bleiben anderen Wassersportlern und Schwimmern fern und meiden überfüllte Bereiche.</p>
+            <div class="conduct-icon">
+              <svg width="240" height="240" viewBox="0 0 120 114" fill="none" xmlns="http://www.w3.org/2000/svg" class="svg-icon consideration-icon">
+                <rect width="120" height="114" fill="white"/>
+                <g clip-path="url(#clip0_16_237)">
+                <path class="draw-stroke" d="M50.4478 88.4286L52.8355 69.3265H67.1644L69.5522 88.4286H83.8788L86.2666 69.3265H91.0407C92.3594 69.3265 93.4286 68.2575 93.4286 66.9388V62.1632C93.4286 52.9321 85.9447 45.449 76.7138 45.449H43.2863C34.0552 45.449 26.5714 52.9321 26.5714 62.1632V66.9388C26.5714 68.2575 27.6404 69.3265 28.9592 69.3265H33.7335L36.1213 88.4286H50.4478Z" fill="#006781" fill-opacity="0.2"/>
+                <path class="draw-stroke" d="M43.2857 38.2857C47.9012 38.2857 51.6429 34.5441 51.6429 29.9286C51.6429 25.313 47.9012 21.5714 43.2857 21.5714C38.6702 21.5714 34.9286 25.313 34.9286 29.9286C34.9286 34.5441 38.6702 38.2857 43.2857 38.2857Z" fill="#006781" fill-opacity="0.2"/>
+                <path class="draw-stroke" d="M76.7143 38.2857C81.33 38.2857 85.0715 34.5441 85.0715 29.9286C85.0715 25.313 81.33 21.5714 76.7143 21.5714C72.0988 21.5714 68.3572 25.313 68.3572 29.9286C68.3572 34.5441 72.0988 38.2857 76.7143 38.2857Z" fill="#006781" fill-opacity="0.2"/>
+                <path class="draw-stroke" d="M43.2857 38.2857C47.9012 38.2857 51.6429 34.5441 51.6429 29.9286C51.6429 25.313 47.9012 21.5714 43.2857 21.5714C38.6702 21.5714 34.9286 25.313 34.9286 29.9286C34.9286 34.5441 38.6702 38.2857 43.2857 38.2857Z" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M76.7143 38.2857C81.33 38.2857 85.0715 34.5441 85.0715 29.9286C85.0715 25.313 81.33 21.5714 76.7143 21.5714C72.0988 21.5714 68.3572 25.313 68.3572 29.9286C68.3572 34.5441 72.0988 38.2857 76.7143 38.2857Z" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M52.8355 69.3265L50.4478 88.4286H36.1213L33.7335 69.3265H28.9592C27.6404 69.3265 26.5714 68.2575 26.5714 66.9388V62.1632C26.5714 52.9321 34.0552 45.449 43.2863 45.449H76.7138C85.9447 45.449 93.4286 52.9321 93.4286 62.1632V66.9388C93.4286 68.2575 92.3594 69.3265 91.0407 69.3265H86.2666L83.8788 88.4286H69.5522L67.1644 69.3265" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                </g>
+                <defs>
+                <clipPath id="clip0_16_237">
+                <rect width="72" height="72" fill="white" transform="translate(24 19)"/>
+                </clipPath>
+                </defs>
+              </svg>
+            </div>
+          </div>
+          <div class="conduct-item reveal-item">
+            <div class="conduct-number">05</div>
+            <h3 data-i18n="conduct_5_title">Einhaltung von Vorschriften</h3>
+            <p data-i18n="conduct_5_text">Wir befolgen alle geltenden Gesetze, Regeln und Einschränkungen bezüglich des Pumpfoilens.</p>
+            <div class="conduct-icon">
+              <svg width="240" height="240" viewBox="0 0 120 114" fill="none" xmlns="http://www.w3.org/2000/svg" class="svg-icon compliance-icon">
+                <rect width="120" height="114" fill="white"/>
+                <path class="draw-stroke" d="M59.9999 87.3486V74.4915H31.7142V87.3486" fill="#006781" fill-opacity="0.2"/>
+                <path class="draw-stroke" d="M26.5714 87.3486H65.1428" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M59.9999 87.3486V74.4915H31.7142V87.3486" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M64.0459 24.1539L45.6086 42.5912C43.6002 44.5996 43.6002 47.8559 45.6086 49.8643L53.7545 58.0102C55.7629 60.0186 59.0192 60.0186 61.0276 58.0102L79.4647 39.5729C81.4735 37.5644 81.4735 34.3082 79.4647 32.2998L71.319 24.1539C69.3106 22.1455 66.0543 22.1455 64.0459 24.1539Z" fill="#006781" fill-opacity="0.2"/>
+                <path class="draw-stroke" d="M64.0459 24.1538L45.6086 42.5911C43.6002 44.5995 43.6002 47.8557 45.6086 49.8642L53.7545 58.0101C55.7629 60.0185 59.0192 60.0185 61.0276 58.0101L79.4647 39.5728C81.4735 37.5643 81.4735 34.3081 79.4647 32.2996L71.319 24.1538C69.3106 22.1454 66.0543 22.1454 64.0459 24.1538Z" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M70.2858 48.7771L93.4286 71.9199" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="conduct-item reveal-item">
+            <div class="conduct-number">06</div>
+            <h3 data-i18n="conduct_6_title">Spass und Sportgeist</h3>
+            <p data-i18n="conduct_6_text">Wir genießen das Pumpfoilen mit Begeisterung, Respekt und sportlicher Fairness.</p>
+            <div class="conduct-icon">
+              <svg width="240" height="240" viewBox="0 0 120 114" fill="none" xmlns="http://www.w3.org/2000/svg" class="svg-icon fun-icon">
+                <rect width="120" height="114" fill="white"/>
+                <path class="draw-stroke" d="M27.6658 73.1095L32.5462 66.7413L29.7923 59.9258C28.8082 57.4904 28.3024 54.8882 28.3024 52.2614V37.7005C28.3024 34.922 30.2681 32.5318 32.9942 31.9953C36.1671 31.3709 39.2398 33.4551 39.8329 36.634L41.7131 46.7106L45.5157 40.541" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M70.7148 56.7788L73.7429 51.7618C75.8894 48.2053 74.731 43.5811 71.1611 41.4568C67.6359 39.3591 63.079 40.4882 60.9409 43.9891L57.8866 48.9902C55.7273 52.5259 56.8421 57.1427 60.377 59.3035C63.9269 61.4735 68.5648 60.3409 70.7148 56.7788Z" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M57.9752 48.9339L61.0033 43.917C63.15 40.3604 61.9914 35.7362 58.4215 33.6119C54.8962 31.5143 50.3394 32.6433 48.2013 36.1443L45.147 41.1453C42.9877 44.6811 44.1025 49.2979 47.6374 51.4587C51.1873 53.6287 55.8252 52.496 57.9752 48.9339Z" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path class="draw-stroke" d="M57.4913 87.5014L61.5659 82.2757L66.8425 80.361C71.5269 78.6613 75.4347 75.319 77.8405 70.9553L92.3187 44.6937C93.9793 41.6813 92.9173 37.8936 89.9319 36.1842C86.9182 34.4584 83.076 35.497 81.3418 38.5065L72.7366 53.4422" stroke="#006781" stroke-width="5.14286" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M27.6658 73.1095L32.5462 66.7413L29.7923 59.9258C28.8082 57.4904 28.3024 54.8882 28.3024 52.2614V37.7005C28.3024 34.922 30.2681 32.5318 32.9942 31.9953C36.1671 31.3709 39.2398 33.4551 39.8329 36.634L41.7131 46.7106L48.2013 36.1443C50.3393 32.6433 54.8961 31.5143 58.4214 33.6119C61.9111 35.6885 63.0966 40.1538 61.143 43.6755C63.3558 40.4224 67.7432 39.4231 71.161 41.4568C74.632 43.5222 75.8235 47.9509 73.9137 51.4638L81.3418 38.5064C83.0759 35.4969 86.9182 34.4583 89.9319 36.1842C92.9173 37.8936 93.9793 41.6812 92.3187 44.6937L77.8405 70.9552C75.4347 75.3189 71.5267 78.6613 66.8424 80.361L61.5658 82.2757L57.4912 87.5013L27.6658 73.1095Z" fill="#006781" fill-opacity="0.2"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        
+        <div class="conduct-conclusion reveal-text">
+            <p data-i18n="conduct_conclusion_part1">By adopting these principles and guidelines, we believe that we can promote pumpfoiling as a safe, responsible, and sustainable sport that respects the water, the environment, and the people who share our love for this unique and exciting activity. Therefore, we invite all pumpfoil enthusiasts to join us in this commitment to safety, responsibility, and good sportsmanship, and to help us spread the message of the Pumpfoiling Manifesto to others who may be interested in this sport.</p>
+            <p data-i18n="conduct_conclusion_part2"></p>
+            <p data-i18n="conduct_conclusion_endnote" style="font-weight: bold;">Let's pumpfoil with confidence, respect, and joy!</p></div>
+      </div>
+    </section>
+
+    <section class="supporters" id="supporters">
+      <div class="container">
+        <h2 class="section-title reveal-text" data-i18n="supporters_title">Unterstützende Organisationen</h2>
+        <div class="supporters-grid">
+          <!-- Indiana Paddlesurf -->
+          <div class="supporter-logo reveal-item">
+            <a href="https://indiana-paddlesurf.com/" target="_blank" rel="noopener noreferrer">
+              <img src="./src/images/supporters/indiana-logo.png" alt="Indiana Paddlesurf Logo">
+            </a>
+          </div>
+          <!-- Swiss Foiling -->
+          <div class="supporter-logo reveal-item">
+            <a href="https://www.swiss-foiling.ch/" target="_blank" rel="noopener noreferrer">
+              <img src="./src/images/supporters/swiss-foiling-logo.svg" alt="Swiss Foiling Logo">
+            </a>
+          </div>
+          <!-- Ensis -->
+          <!-- <div class="supporter-logo reveal-item">
+            <a href="https://www.ensis.surf/" target="_blank" rel="noopener noreferrer">
+              <img src="./src/images/supporters/ensis-logo.png" alt="Ensis Logo">
+            </a>
+          </div> -->
+          <!-- Flatwatersquad -->
+          <div class="supporter-logo reveal-item">
+            <a href="https://www.instagram.com/flatwatersquad/" target="_blank" rel="noopener noreferrer">
+              <img src="./src/images/supporters/flatwatersquad-logo.png" alt="Flatwatersquad Logo">
+            </a>
+          </div>
+          <!-- Foil Club Zürichsee -->
+          <div class="supporter-logo reveal-item">
+            <a href="https://foilclubzuerichsee.ch/" target="_blank" rel="noopener noreferrer">
+              <img src="./src/images/supporters/logo-foilclub-zuerichsee.png" alt="Foil Club Zürichsee Logo">
+            </a>
+          </div>
+          <!-- Next Wave App -->
+          <div class="supporter-logo reveal-item">
+            <a href="https://nextwaveapp.ch/" target="_blank" rel="noopener noreferrer">
+              <img src="./src/images/supporters/nextwave-logo.png" alt="NextWave App Logo">
+            </a>
+          </div>
+          <!-- Supkultur -->
+          <div class="supporter-logo reveal-item">
+            <a href="https://www.supkultur.ch/" target="_blank" rel="noopener noreferrer">
+              <img src="./src/images/supporters/logo-supkultur.png" alt="NextWave App Logo">
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="signatories" id="sign">
+      <div class="container">
+        <h2 class="section-title reveal-text" data-i18n="signatories_title">Unterzeichner</h2>
+        <div class="signature-counter-container reveal-text">
+          <span class="signature-counter">0</span>
+          <span class="signature-counter-text" data-i18n="signature_counter_text">Unterzeichner</span>
+        </div>
+        <div class="signatories-list" id="signatories-list">
+          <!-- Signatories will be loaded from Firestore database -->
+          <div class="loading">Signatories laden...</div>
+        </div>
+        <div class="sign-form">
+          <h3 class="reveal-text" data-i18n="sign_form_title">Den Code of Conduct unterzeichnen</h3>
+          <form id="sign-form" class="reveal-item">
+            <div class="form-group">
+              <label for="name" data-i18n="sign_form_name">Name</label>
+              <input type="text" id="name" name="name" required autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label for="location" data-i18n="sign_form_location">Ort</label>
+              <input type="text" id="location" name="location" required autocomplete="address-level2">
+            </div>
+            <!-- Honeypot field for spam protection -->
+            <div class="form-group" style="display:none">
+              <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+            </div>
+            <!-- Hidden timestamp field for spam protection -->
+            <input type="hidden" id="timestamp" name="timestamp">
+            <!-- Google reCAPTCHA v3 -->
+            <div class="g-recaptcha" data-sitekey="6LevlvsqAAAAAFcvk8jC7vbci8FJHnhhXNTLr3Dq" data-callback="onCaptchaComplete" data-size="invisible"></div>
+            <button type="submit" class="btn btn-primary" data-i18n="sign_form_button">Unterzeichnen</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="grid footer-grid">
+        <div class="grid-item footer-item">
+          <h3 class="footer-title" data-i18n="footer_title">Pumpfoilers Code of Conduct - Switzerland</h3>
+          <div class="footer-initiative">
+            <p class="initiative-text" data-i18n="footer_initiative">Eine Initiative von</p>
+            <a href="https://pumpfoiling.community" target="_blank" class="pfc-logo">
+              <img src="./src/images/logos/pfc-logo.png" alt="Pumpfoiling Community Logo" width="160">
+            </a>
+          </div>
+          <p class="copyright" data-i18n="footer_copyright">Diese Arbeit ist lizenziert unter CC BY-NC-SA 4.0</p>
+        </div>
+        <div class="grid-item footer-item">
+          <div class="footer-nav-container">
+            <nav class="footer-nav">
+              <ul>
+                <li><a href="#intro" data-scroll data-i18n="nav_intro">Intro</a></li>
+                <li><a href="#conduct" data-scroll data-i18n="nav_conduct">Code of Conduct</a></li>
+                <li><a href="#supporters" data-scroll data-i18n="nav_supporters">Unterstützer</a></li>
+                <li><a href="#sign" data-scroll data-i18n="nav_sign">Unterzeichnen</a></li>
+              </ul>
+            </nav>
+            <nav class="footer-languages">
+              <ul class="languages-list">
+                <li><a href="#" class="lang-link" data-lang="de">Deutsch</a></li>
+                <li><a href="#" class="lang-link" data-lang="en">English</a></li>
+                <li><a href="#" class="lang-link" data-lang="fr">Français</a></li>
+                <li><a href="#" class="lang-link" data-lang="it">Italiano</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div class="bottom-footer">
+        <p class="opensource-note">
+          <span data-i18n="footer_opensource">Open-Source-Projekt auf</span> 
+          <a href="https://github.com/pfederi/codeofconduct" target="_blank" class="github-link">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+            GitHub
+          </a>
+        </p>
+        <p class="made-by">Made with &nbsp;<span class="heart">♥</span>&nbsp; by&nbsp; <a href="https://lakeshorestudios.ch" target="_blank">Lakeshore Studios</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/js/main.js"></script>
+</body>
+</html> 

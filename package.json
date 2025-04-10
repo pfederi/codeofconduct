@@ -1,0 +1,27 @@
+{
+  "name": "pumpfoilers-code-of-conduct",
+  "version": "1.0.0",
+  "description": "Pumpfoilers Code of Conduct - Switzerland",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && cp -r content dist/",
+    "preview": "vite preview",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "pumpfoiling",
+    "code of conduct",
+    "switzerland"
+  ],
+  "author": "",
+  "license": "CC-BY-NC-SA-4.0",
+  "devDependencies": {
+    "gsap": "^3.12.7",
+    "sass": "^1.86.0",
+    "vite": "^6.2.2"
+  },
+  "dependencies": {
+    "firebase": "^11.5.0"
+  }
+}
