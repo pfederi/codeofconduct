@@ -461,6 +461,18 @@ a {
     line-height: 1.6;
     color: $text-color;
     padding: 0 2rem;
+
+    p {
+      text-align: center;
+      margin-bottom: 2rem;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
   
   .conduct-item {
