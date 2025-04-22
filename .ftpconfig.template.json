@@ -1,0 +1,11 @@
+{
+  "host": "ftp.example.com",
+  "user": "your-username",
+  "password": "your-password",
+  "port": 21,
+  "localRoot": "./dist",
+  "remoteRoot": "/",
+  "include": ["*", "**/*"],
+  "deleteRemote": false,
+  "forcePasv": true
+} 

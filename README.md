@@ -1,145 +1,66 @@
 # Pumpfoilers Code of Conduct
 
-The Pumpfoilers Code of Conduct establishes guidelines for safe and respectful pumpfoiling in Switzerland. As a community-driven initiative, it sets standards for responsible behavior on the water and promotes safety within our growing sport.
+Der Pumpfoilers Code of Conduct definiert die Grundsätze für sicheres und respektvolles Pumpfoilen in der Schweiz. Als Community-getriebene Initiative setzt er Standards für verantwortungsvolles Verhalten auf dem Wasser.
 
-🌊 [Join our Community](https://pumpfoiling.community)
+🌊 [Zur Community](https://pumpfoiling.community)
 
-## Adapt for Your Country
+## Technische Umsetzung
 
-We encourage pumpfoiling communities worldwide to adapt this Code of Conduct for their local needs. The entire codebase is designed to be easily customizable:
+- Swiss Design System
+- Mehrsprachig (DE, EN, FR, IT)
+- Responsive Layout
+- GSAP Animationen
+- Firebase Integration
 
-- **Multilingual**: Simply add your language files
-- **Content**: Modify the Code of Conduct text for your region
-- **Branding**: Adjust colors and design to match your community
-- **Hosting**: Set up your own Firebase instance or use any hosting service
+## Entwicklung
 
-Feel free to fork this repository and create your own version. We believe in sharing knowledge and promoting safety across the global pumpfoiling community.
-
-## Technical Implementation
-
-Our web application is built with modern technologies and best practices:
-
-- **Design System**: Swiss Design principles with a clean, responsive layout
-- **Internationalization**: Full support for DE, EN, FR, and IT
-- **Frontend**: Responsive layout with modern CSS Grid and Flexbox
-- **Animations**: GSAP (GreenSock Animation Platform) for smooth transitions
-- **Backend**: Firebase for secure data storage and hosting
-- **Security**: reCAPTCHA v3 integration for spam protection
-
-## Development Guide
-
-### Prerequisites
-
-- Node.js (v16 or higher)
-- npm (v8 or higher)
-- Firebase CLI (`npm install -g firebase-tools`)
-- Git
-
-### Local Development Setup
+### Setup
 
 ```bash
-# Clone the repository
+# Repository klonen
 git clone https://github.com/pfederi/codeofconduct.git
 cd codeofconduct
 
-# Install dependencies
+# Dependencies installieren
 npm install
 
-# Start development server
+# Entwicklungsserver starten
 npm run dev
 ```
 
-The development server will start at `http://localhost:3000` with hot reload enabled.
+### Build & Deployment
 
-### Build Process
-
+#### Build
 ```bash
-# Create production build
+# Produktions-Build erstellen
 npm run build
-
-# Preview production build locally
-npm run preview
-
-# Deploy to Firebase
-firebase deploy
 ```
 
-### Firebase Configuration
+#### FTP Deployment
+Das Projekt unterstützt automatisches FTP Deployment. Folge diesen Schritten:
 
-1. Create a new project in the [Firebase Console](https://console.firebase.google.com/)
-2. Enable Firestore Database in test mode
-3. Create a collection named "signatories"
-4. Set up your Firebase configuration:
-   
-   Create `src/js/firebase-config.js`:
-   ```javascript
-   export const firebaseConfig = {
-     apiKey: "your-api-key",
-     authDomain: "your-project.firebaseapp.com",
-     projectId: "your-project-id",
-     storageBucket: "your-project.appspot.com",
-     messagingSenderId: "your-sender-id",
-     appId: "your-app-id"
-   };
-   ```
-
-### Security Configuration
-
-1. Set up reCAPTCHA v3:
-   - Register at [Google reCAPTCHA Admin](https://www.google.com/recaptcha/admin)
-   - Choose reCAPTCHA v3
-   - Add your domain
-   - Copy the Site Key to your environment variables
-
-2. Configure Firestore Rules:
-   ```javascript
-   rules_version = '2';
-   service cloud.firestore {
-     match /databases/{database}/documents {
-       match /signatories/{document} {
-         allow read: if true;
-         allow write: if request.auth != null;
-       }
-     }
+1. Kopiere `.ftpconfig.template.json` zu `.ftpconfig.json`
+2. Fülle die FTP-Zugangsdaten in `.ftpconfig.json` aus:
+   ```json
+   {
+     "host": "dein-ftp-server.com",
+     "user": "dein-username",
+     "password": "dein-passwort",
+     "port": 21
    }
    ```
+3. Führe das Deployment aus:
+   ```bash
+   npm run deploy-ftp
+   ```
 
-### Project Structure
+Die Dateien werden automatisch in das `/coc` Verzeichnis auf dem FTP-Server hochgeladen.
 
-```
-codeofconduct/
-├── src/
-│   ├── js/
-│   │   ├── firebase-config.js
-│   │   └── main.js
-│   ├── css/
-│   │   └── style.css
-│   └── index.html
-├── public/
-│   └── assets/
-├── dist/           # Production build
-└── firebase.json   # Firebase configuration
-```
+**Wichtig:** Die `.ftpconfig.json` Datei enthält sensitive Daten und ist in `.gitignore` aufgeführt. Committe niemals deine FTP-Zugangsdaten!
 
-### Available Scripts
+## Lizenz
 
-- `npm run dev`: Start development server
-- `npm run build`: Create production build
-- `npm run preview`: Preview production build locally
-- `npm run lint`: Run ESLint
-- `npm run format`: Format code with Prettier
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This work is licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) - Creative Commons Attribution-NonCommercial-ShareAlike 4.0
+[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 ---
 Built with ♥ by the Swiss Pumpfoiling Community

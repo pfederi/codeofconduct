@@ -58,4 +58,7 @@ firestore.indexes.json
 firestore.rules
 .firebase/
 firebase-config.js
-src/js/firebase-config.js 
+src/js/firebase-config.js
+
+# FTP config
+.ftpconfig.json 
