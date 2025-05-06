@@ -1,66 +1,110 @@
 # Pumpfoilers Code of Conduct
 
-Der Pumpfoilers Code of Conduct definiert die Grundsätze für sicheres und respektvolles Pumpfoilen in der Schweiz. Als Community-getriebene Initiative setzt er Standards für verantwortungsvolles Verhalten auf dem Wasser.
+This repository contains the Code of Conduct website for the pumpfoiling community.
 
-🌊 [Zur Community](https://pumpfoiling.community)
+## About
 
-## Technische Umsetzung
+The Pumpfoilers Code of Conduct is a community-driven initiative to establish guidelines for respectful and safe behavior on the water. It promotes safety, respect, responsibility, consideration, adherence to rules, and fun for all participants.
 
-- Swiss Design System
-- Mehrsprachig (DE, EN, FR, IT)
-- Responsive Layout
-- GSAP Animationen
-- Firebase Integration
+## Features
 
-## Entwicklung
+- Responsive design optimized for all devices
+- Multilingual support
+- Signature system to show support for the code of conduct
+- Interactive card animations
+- Modern Swiss-inspired design
 
-### Setup
+## Tech Stack
 
-```bash
-# Repository klonen
-git clone https://github.com/pfederi/codeofconduct.git
-cd codeofconduct
+- HTML5, CSS3, JavaScript (ES6+)
+- Sass for CSS preprocessing
+- Firebase for signature storage and authentication
+- i18next for internationalization
+- Webpack for asset bundling
 
-# Dependencies installieren
-npm install
+## Setup
 
-# Entwicklungsserver starten
-npm run dev
-```
-
-### Build & Deployment
-
-#### Build
-```bash
-# Produktions-Build erstellen
-npm run build
-```
-
-#### FTP Deployment
-Das Projekt unterstützt automatisches FTP Deployment. Folge diesen Schritten:
-
-1. Kopiere `.ftpconfig.template.json` zu `.ftpconfig.json`
-2. Fülle die FTP-Zugangsdaten in `.ftpconfig.json` aus:
-   ```json
-   {
-     "host": "dein-ftp-server.com",
-     "user": "dein-username",
-     "password": "dein-passwort",
-     "port": 21
-   }
+1. Clone the repository:
    ```
-3. Führe das Deployment aus:
-   ```bash
-   npm run deploy-ftp
+   git clone https://github.com/yourusername/pumpfoilers-code-of-conduct.git
+   cd pumpfoilers-code-of-conduct
    ```
 
-Die Dateien werden automatisch in das `/coc` Verzeichnis auf dem FTP-Server hochgeladen.
+2. Install dependencies:
+   ```
+   npm install
+   ```
 
-**Wichtig:** Die `.ftpconfig.json` Datei enthält sensitive Daten und ist in `.gitignore` aufgeführt. Committe niemals deine FTP-Zugangsdaten!
+3. Set up Firebase:
+   - Create a Firebase project
+   - Enable Firestore database
+   - Set up authentication if required
+   - Copy your Firebase config to `src/js/firebase-config.js`
 
-## Lizenz
+4. Create `.ftpconfig.json` from the template:
+   ```
+   cp .ftpconfig.template.json .ftpconfig.json
+   ```
+   Then add your FTP credentials to `.ftpconfig.json`
 
-[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+5. Start the development server:
+   ```
+   npm run dev
+   ```
 
----
-Built with ♥ by the Swiss Pumpfoiling Community
+## Deployment
+
+### FTP Deployment
+
+To deploy via FTP:
+
+```
+npm run deploy-ftp
+```
+
+This script will build the project and upload it to the server specified in your `.ftpconfig.json`.
+
+### Manual Deployment
+
+1. Build the project:
+   ```
+   npm run build
+   ```
+
+2. Upload the contents of the `dist` directory to your web server.
+
+## Project Structure
+
+```
+├── dist/                 # Compiled files (not in version control)
+├── src/                  # Source files
+│   ├── assets/           # Static assets
+│   ├── js/               # JavaScript files
+│   ├── scss/             # SCSS files
+│   └── index.html        # Main HTML file
+├── .ftpconfig.template.json  # FTP configuration template
+├── .gitignore            # Git ignore file
+├── package.json          # Project dependencies
+├── webpack.config.js     # Webpack configuration
+└── README.md             # This file
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgements
+
+- Pumpfoilers community for the initiative
+- All contributors and supporters of the Code of Conduct
+- Made with ♥ by Lakeshore Studios
