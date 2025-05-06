@@ -386,6 +386,53 @@ a {
   
   .hero-content {
     max-width: 60rem;
+    
+    // Make the buttons container to handle same-size buttons
+    .buttons-container {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 1.6rem;
+      
+      .btn {
+        min-width: 20rem; // Minimum width
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        width: auto; // Width determined by content
+      }
+      
+      @media (max-width: 768px) {
+        flex-direction: column;
+        width: 100%;
+        gap: 0rem;
+        
+        .btn {
+          width: 100%;
+        }
+      }
+    }
+  }
+  
+  .signature-link {
+    margin-left: 0;
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.7); // Semi-transparent white background
+    border-color: white; // White border for better contrast
+    color: black;
+    
+    &:hover, &:focus {
+      background-color: rgba(255, 255, 255, 0.3); // Slightly more opaque on hover
+      border-color: white;
+      color: white; // Ensure text stays white on hover
+    }
+    
+    .hero-signature-counter {
+      font-weight: bold;
+      margin: 0 0.5rem;
+      color: $accent-color;
+    }
   }
   
   .slider-controls {
@@ -1154,6 +1201,11 @@ a {
     
     p {
       font-size: 1.8rem;
+    }
+    
+    .signature-link {
+      margin-left: 0;
+      margin-top: 1.6rem;
     }
   }
   

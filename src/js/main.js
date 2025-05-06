@@ -54,6 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Initialize SVG drawing animations
   initSvgDrawing();
+  
+  // Make hero buttons equal width
+  initEqualWidthButtons();
 });
 
 // Custom cursor
@@ -491,11 +494,16 @@ async function processFormSubmission(form, name, location, submitButton, origina
     // Add to the list with animation
     signatoriesList.innerHTML = newSignatory.outerHTML + signatoriesList.innerHTML;
     
-    // Update signature counter
-    const counterElement = document.querySelector('.signature-counter');
-    if (counterElement) {
-      const currentCount = parseInt(counterElement.textContent || '0');
-      counterElement.textContent = currentCount + 1;
+    // Update signature counters
+    const counterElements = document.querySelectorAll('.signature-counter, .hero-signature-counter');
+    if (counterElements.length > 0) {
+      const currentCount = parseInt(document.querySelector('.signature-counter').textContent || '0');
+      const newCount = currentCount + 1;
+      
+      // Update all counter elements with the new count
+      counterElements.forEach(element => {
+        element.textContent = newCount;
+      });
     }
     
     // Reset the form
@@ -676,19 +684,28 @@ function displaySignatories(signatories) {
 
 // Function to animate the signature counter
 function animateSignatureCounter(total) {
-  const counterElement = document.querySelector('.signature-counter');
+  const counterElements = document.querySelectorAll('.signature-counter, .hero-signature-counter');
   const counterContainer = document.querySelector('.signature-counter-container');
   
-  if (!counterElement || !counterContainer) return;
+  if (!counterElements || !counterContainer) return;
   
-  // Setze den Anfangswert
-  counterElement.textContent = '0';
+  // Initialize the counters to 0
+  counterElements.forEach(element => {
+    element.textContent = '0';
+  });
   
   // Erstelle einen Intersection Observer für den Counter-Container
   const options = {
     root: null, // Browser viewport
     rootMargin: '0px',
     threshold: 0.5 // 50% des Elements muss sichtbar sein
+  };
+  
+  // Update both main counter and hero counter
+  const updateCounterValues = (value) => {
+    counterElements.forEach(element => {
+      element.textContent = value;
+    });
   };
   
   const observer = new IntersectionObserver((entries) => {
@@ -728,7 +745,7 @@ function animateSignatureCounter(total) {
         // Aktualisiere nur, wenn sich der Wert geändert hat
         if (currentValue !== count) {
           count = currentValue;
-          counterElement.textContent = count;
+          updateCounterValues(count);
         }
         
         // Wiederholen, bis die Animation abgeschlossen ist
@@ -736,7 +753,7 @@ function animateSignatureCounter(total) {
           requestAnimationFrame(updateCounter);
         } else {
           // Stelle sicher, dass am Ende der exakte Wert angezeigt wird
-          counterElement.textContent = total;
+          updateCounterValues(total);
         }
       };
       
@@ -750,6 +767,9 @@ function animateSignatureCounter(total) {
   
   // Starte die Beobachtung des Counter-Containers
   observer.observe(counterContainer);
+  
+  // Always update the hero counter immediately without animation
+  updateCounterValues(total);
 }
 
 // Language switcher functionality
@@ -864,6 +884,9 @@ function initLanguageSwitcher() {
             }
           }
         });
+        
+        // Dispatch an event to notify that language has changed
+        document.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: lang } }));
       })
       .catch(error => {
         console.error(`Error loading translations for ${lang}:`, error);
@@ -961,4 +984,44 @@ async function syncPendingUploads() {
   console.log("Synchronizing with Firestore is now handled directly in the main code");
   // Diese Funktion ist deaktiviert, da wir die Lokalspeicherung nicht mehr verwenden
   return;
+}
+
+// Function to ensure hero buttons have equal width based on the widest button
+function initEqualWidthButtons() {
+  const buttonContainer = document.querySelector('.hero-content .buttons-container');
+  const buttons = buttonContainer ? buttonContainer.querySelectorAll('.btn') : null;
+  
+  if (!buttonContainer || !buttons || buttons.length < 2) return;
+  
+  // Function to update button widths
+  const updateButtonWidths = () => {
+    // Reset widths to auto to measure their natural width
+    buttons.forEach(btn => {
+      btn.style.width = 'auto';
+    });
+    
+    // Find the maximum width among all buttons
+    let maxWidth = 0;
+    buttons.forEach(btn => {
+      const width = btn.offsetWidth;
+      maxWidth = Math.max(maxWidth, width);
+    });
+    
+    // Set all buttons to the maximum width
+    if (maxWidth > 0 && window.innerWidth > 768) { // Only apply on non-mobile screens
+      buttons.forEach(btn => {
+        btn.style.width = `${maxWidth}px`;
+      });
+    }
+  };
+  
+  // Update initially and whenever window resizes
+  updateButtonWidths();
+  window.addEventListener('resize', updateButtonWidths);
+  
+  // Also update when language changes (custom event that might be triggered elsewhere)
+  document.addEventListener('languageChanged', updateButtonWidths);
+  
+  // Update again after all content is loaded
+  window.addEventListener('load', updateButtonWidths);
 }
