@@ -161,18 +161,26 @@ function initSlider() {
       container.removeChild(slide);
     });
     
-    // Shuffle array
-    for (let i = slidesArray.length - 1; i > 0; i--) {
+    // Keep first slide, shuffle the rest
+    const firstSlide = slidesArray[0];
+    const remainingSlides = slidesArray.slice(1);
+    
+    // Shuffle remaining slides
+    for (let i = remainingSlides.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [slidesArray[i], slidesArray[j]] = [slidesArray[j], slidesArray[i]];
+      [remainingSlides[i], remainingSlides[j]] = [remainingSlides[j], remainingSlides[i]];
     }
     
-    // Re-append slides in new order
-    slidesArray.forEach((slide, index) => {
+    // Re-append slides in new order (first slide first, then shuffled remaining slides)
+    container.appendChild(firstSlide);
+    remainingSlides.forEach(slide => {
       container.appendChild(slide);
-      if (index === 0) {
-        slide.classList.add('active');
-      }
+    });
+    
+    // Set first slide as active and ensure others are hidden
+    firstSlide.classList.add('active');
+    remainingSlides.forEach(slide => {
+      slide.classList.remove('active');
     });
     
     // Update slides and dots references with the new order
