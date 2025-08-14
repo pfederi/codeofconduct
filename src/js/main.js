@@ -43,11 +43,28 @@ document.addEventListener('DOMContentLoaded', () => {
   // Sync any pending uploads from localStorage to Firestore
   syncPendingUploads();
   
-  // Load existing signatories
-  loadSignatories();
-  
-  // Initialize language switcher
+  // Initialize language switcher first
   initLanguageSwitcher();
+  
+  // Load existing signatories after language is initialized
+  setTimeout(() => {
+    loadSignatories();
+  }, 500);
+  
+  // Update banner styling when language changes
+  document.addEventListener('languageChanged', (event) => {
+    const lang = event.detail.language;
+    // Update all existing banner elements with correct language class
+    document.querySelectorAll('.new-banner').forEach(element => {
+      // Remove all language classes first
+      element.classList.remove('lang-fr', 'lang-it', 'lang-en', 'lang-de');
+      
+      // Add language-specific class for styling
+      if (lang === 'fr' || lang === 'it') {
+        element.classList.add(`lang-${lang}`);
+      }
+    });
+  });
   
   // Initialize mobile menu
   initMobileMenu();
@@ -494,13 +511,19 @@ async function processFormSubmission(form, name, location, submitButton, origina
     newSignatory.className = 'signatory reveal-item';
     newSignatory.style.opacity = '1';  // Ensure visible immediately
     newSignatory.style.transform = 'translateY(0)';  // No initial transform
+    
     newSignatory.innerHTML = `
       <div class="signatory-name">${name}</div>
       <div class="signatory-location">${location}</div>
+      <div class="new-banner" data-i18n="new_banner">New</div>
     `;
     
     // Add to the list with animation
     signatoriesList.innerHTML = newSignatory.outerHTML + signatoriesList.innerHTML;
+    
+    // Apply translations to the new banner
+    const currentLang = document.documentElement.getAttribute('lang') || 'de';
+    applyTranslationsToNewElements(currentLang);
     
     // Update signature counters
     const counterElements = document.querySelectorAll('.signature-counter, .hero-signature-counter');
@@ -595,6 +618,73 @@ async function loadSignatories() {
   }
 }
 
+// Helper function to apply translations to newly added elements
+function applyTranslationsToNewElements(lang) {
+  fetch(`./content/translations/${lang}.json`)
+    .then(response => response.json())
+    .then(translations => {
+      // Apply translations to new banner elements
+      document.querySelectorAll('.new-banner[data-i18n="new_banner"]').forEach(element => {
+        if (translations['new_banner']) {
+          element.textContent = translations['new_banner'];
+        }
+        
+        // Remove all language classes first
+        element.classList.remove('lang-fr', 'lang-it', 'lang-en', 'lang-de');
+        
+        // Add language-specific class for styling
+        if (lang === 'fr' || lang === 'it') {
+          element.classList.add(`lang-${lang}`);
+        }
+      });
+      
+      // Apply translations to load more button
+      document.querySelectorAll('.load-more-btn[data-i18n="load_more_button"]').forEach(element => {
+        if (translations['load_more_button']) {
+          element.textContent = translations['load_more_button'];
+        }
+      });
+    })
+    .catch(error => {
+      console.error(`Error loading translations for ${lang}:`, error);
+    });
+}
+
+// Helper function to check if signatory is new (within last 10 days)
+function isSignatoryNew(signatory) {
+  if (!signatory.timestamp && !signatory.date) return false;
+  
+  let signatoryDate;
+  
+  // Parse timestamp from various possible formats
+  if (signatory.timestamp) {
+    if (signatory.timestamp?.seconds) {
+      // Firestore timestamp format
+      signatoryDate = new Date(signatory.timestamp.seconds * 1000);
+    } else if (signatory.timestamp?.toDate) {
+      // Firestore timestamp object
+      signatoryDate = signatory.timestamp.toDate();
+    } else {
+      // ISO string or regular Date
+      signatoryDate = new Date(signatory.timestamp);
+    }
+  } else if (signatory.date) {
+    // Use date field as fallback
+    signatoryDate = new Date(signatory.date);
+  }
+  
+  // Calculate 10 days ago
+  const tenDaysAgo = new Date();
+  tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
+  
+  // Ensure we have a valid date
+  if (!signatoryDate || isNaN(signatoryDate.getTime())) {
+    return false;
+  }
+  
+  return signatoryDate > tenDaysAgo;
+}
+
 // Helper function to display signatories in the DOM
 function displaySignatories(signatories) {
   const signatoriesList = document.querySelector('#signatories-list');
@@ -618,9 +708,32 @@ function displaySignatories(signatories) {
   const SIGNATORIES_PER_PAGE = 12;
   let currentPage = 1;
   
-  // Randomize signatories array for initial display
+  // Sort signatories: new ones first (chronological), then old ones (random)
   try {
-    const randomizedSignatories = [...signatories].sort(() => Math.random() - 0.5);
+    const newSignatories = [];
+    const oldSignatories = [];
+    
+    // Separate new and old signatories
+    signatories.forEach(signatory => {
+      if (isSignatoryNew(signatory)) {
+        newSignatories.push(signatory);
+      } else {
+        oldSignatories.push(signatory);
+      }
+    });
+    
+    // Sort new signatories chronologically (newest first)
+    newSignatories.sort((a, b) => {
+      const timestampA = a.timestamp?.seconds ? new Date(a.timestamp.seconds * 1000) : new Date(a.timestamp || a.date || 0);
+      const timestampB = b.timestamp?.seconds ? new Date(b.timestamp.seconds * 1000) : new Date(b.timestamp || b.date || 0);
+      return timestampB - timestampA;
+    });
+    
+    // Randomize old signatories
+    oldSignatories.sort(() => Math.random() - 0.5);
+    
+    // Combine: new ones first, then old ones
+    const sortedSignatories = [...newSignatories, ...oldSignatories];
     
     // Function to display a batch of signatories
     const displaySignatoriesBatch = (start, count) => {
@@ -629,8 +742,8 @@ function displaySignatories(signatories) {
         const fragment = document.createDocumentFragment();
         
         // Display the signatories
-        for (let i = start; i < start + count && i < randomizedSignatories.length; i++) {
-          const signatory = randomizedSignatories[i];
+        for (let i = start; i < start + count && i < sortedSignatories.length; i++) {
+          const signatory = sortedSignatories[i];
           
           if (!signatory) {
             console.warn('Skipping undefined signatory at index', i);
@@ -641,9 +754,14 @@ function displaySignatories(signatories) {
           signatoryElement.className = 'signatory reveal-item';
           signatoryElement.style.opacity = '1';  // Ensure visible immediately
           signatoryElement.style.transform = 'translateY(0)';  // No initial transform
+          
+          // Check if signatory is new (within last 10 days)
+          const isNew = isSignatoryNew(signatory);
+          
           signatoryElement.innerHTML = `
             <div class="signatory-name">${signatory.name || 'Unbekannt'}</div>
             <div class="signatory-location">${signatory.location || 'Unbekannt'}</div>
+            ${isNew ? '<div class="new-banner" data-i18n="new_banner">New</div>' : ''}
           `;
           
           fragment.appendChild(signatoryElement);
@@ -651,6 +769,10 @@ function displaySignatories(signatories) {
         
         // Add signatories to the DOM
         signatoriesList.appendChild(fragment);
+        
+        // Apply translations to new banner elements
+        const currentLang = document.documentElement.getAttribute('lang') || 'de';
+        applyTranslationsToNewElements(currentLang);
       } catch (batchError) {
         console.error('Error displaying signatories batch:', batchError);
       }
@@ -658,14 +780,18 @@ function displaySignatories(signatories) {
     
     // Create and configure "Load More" button
     loadMoreContainer.className = 'load-more-container';
-    loadMoreContainer.innerHTML = '<button class="btn btn-secondary load-more-btn" data-i18n="load_more_button">Mehr laden</button>';
+    loadMoreContainer.innerHTML = '<button class="btn btn-secondary load-more-btn" data-i18n="load_more_button">Load More</button>';
     
     // Display first batch of signatories
     displaySignatoriesBatch(0, SIGNATORIES_PER_PAGE);
     
     // Add Load More button if there are more signatories
-    if (randomizedSignatories.length > SIGNATORIES_PER_PAGE) {
+    if (sortedSignatories.length > SIGNATORIES_PER_PAGE) {
       signatoriesList.after(loadMoreContainer);
+      
+      // Apply translation to load more button
+      const currentLang = document.documentElement.getAttribute('lang') || 'de';
+      applyTranslationsToNewElements(currentLang);
       
       // Add event listener to Load More button
       const loadMoreBtn = loadMoreContainer.querySelector('.load-more-btn');
@@ -678,7 +804,7 @@ function displaySignatories(signatories) {
           displaySignatoriesBatch(startIndex, SIGNATORIES_PER_PAGE);
           
           // Hide button if all signatories are displayed
-          if (startIndex + SIGNATORIES_PER_PAGE >= randomizedSignatories.length) {
+          if (startIndex + SIGNATORIES_PER_PAGE >= sortedSignatories.length) {
             loadMoreContainer.style.display = 'none';
           }
         });
