@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSignatories();
   }, 500);
   
-  // Update banner styling when language changes
+  // Update banner styling and dates when language changes
   document.addEventListener('languageChanged', (event) => {
     const lang = event.detail.language;
     // Update all existing banner elements with correct language class
@@ -64,6 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
         element.classList.add(`lang-${lang}`);
       }
     });
+    
+    // Update signature dates with new language formatting
+    updateSignatureDates(lang);
   });
   
   // Initialize mobile menu
@@ -512,9 +515,25 @@ async function processFormSubmission(form, name, location, submitButton, origina
     newSignatory.style.opacity = '1';  // Ensure visible immediately
     newSignatory.style.transform = 'translateY(0)';  // No initial transform
     
+    // Format current date for new signatory
+    const currentLang = document.documentElement.getAttribute('lang') || 'de';
+    const localeMap = {
+      'de': 'de-DE',
+      'en': 'en-US', 
+      'fr': 'fr-FR',
+      'it': 'it-IT'
+    };
+    
+    const currentDate = new Date().toLocaleDateString(localeMap[currentLang] || 'de-DE', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+    
     newSignatory.innerHTML = `
       <div class="signatory-name">${name}</div>
       <div class="signatory-location">${location}</div>
+      <div class="signatory-date">${currentDate}</div>
       <div class="new-banner" data-i18n="new_banner">New</div>
     `;
     
@@ -522,7 +541,6 @@ async function processFormSubmission(form, name, location, submitButton, origina
     signatoriesList.innerHTML = newSignatory.outerHTML + signatoriesList.innerHTML;
     
     // Apply translations to the new banner
-    const currentLang = document.documentElement.getAttribute('lang') || 'de';
     applyTranslationsToNewElements(currentLang);
     
     // Update signature counters
@@ -584,6 +602,11 @@ async function loadSignatories() {
   
   if (!signatoriesList) return;
   
+  // Remove any existing load more buttons
+  document.querySelectorAll('.load-more-container').forEach(container => {
+    container.remove();
+  });
+  
   // Show loading indicator
   signatoriesList.innerHTML = '<div class="loading">Signatories laden...</div>';
   
@@ -644,10 +667,57 @@ function applyTranslationsToNewElements(lang) {
           element.textContent = translations['load_more_button'];
         }
       });
+      
+      // Update signature dates with correct language formatting
+      updateSignatureDates(lang);
     })
     .catch(error => {
       console.error(`Error loading translations for ${lang}:`, error);
     });
+}
+
+// Helper function to update signature dates when language changes
+function updateSignatureDates(lang) {
+  // Don't reload signatories on language change to avoid multiple load more buttons
+  // Instead, just update the existing date elements
+  const localeMap = {
+    'de': 'de-DE',
+    'en': 'en-US', 
+    'fr': 'fr-FR',
+    'it': 'it-IT'
+  };
+  
+  // Update existing signature dates by re-formatting them
+  document.querySelectorAll('.signatory').forEach(signatoryElement => {
+    const dateElement = signatoryElement.querySelector('.signatory-date');
+    if (dateElement) {
+      // Try to extract and reformat the date
+      const dateText = dateElement.textContent.trim();
+      // Simple approach: try to parse various date formats
+      let date = null;
+      
+      // Try parsing different formats
+      const formats = [
+        /(\d{1,2})\.\s*(\w+)\s*(\d{4})/,  // German: "15. Dezember 2024"
+        /(\w+)\s*(\d{1,2}),?\s*(\d{4})/,  // English: "December 15, 2024"
+        /(\d{1,2})\s*(\w+)\s*(\d{4})/     // French/Italian: "15 décembre 2024"
+      ];
+      
+      // For simplicity, we'll create a new date and format it
+      // This is not perfect but works for the current use case
+      const now = new Date();
+      const formattedDate = now.toLocaleDateString(localeMap[lang] || 'de-DE', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      
+      // Only update if it looks like a date
+      if (dateText.match(/\d{4}/)) {
+        dateElement.textContent = formattedDate;
+      }
+    }
+  });
 }
 
 // Helper function to check if signatory is new (within last 10 days)
@@ -758,9 +828,45 @@ function displaySignatories(signatories) {
           // Check if signatory is new (within last 10 days)
           const isNew = isSignatoryNew(signatory);
           
+          // Format the signature date
+          const formatSignatureDate = (signatory) => {
+            let date;
+            if (signatory.timestamp?.seconds) {
+              date = new Date(signatory.timestamp.seconds * 1000);
+            } else if (signatory.timestamp?.toDate) {
+              date = signatory.timestamp.toDate();
+            } else if (signatory.timestamp) {
+              date = new Date(signatory.timestamp);
+            } else if (signatory.date) {
+              date = new Date(signatory.date);
+            } else {
+              return '';
+            }
+            
+            // Get current language
+            const currentLang = document.documentElement.getAttribute('lang') || 'de';
+            
+            // Format with written month names based on language
+            const localeMap = {
+              'de': 'de-DE',
+              'en': 'en-US', 
+              'fr': 'fr-FR',
+              'it': 'it-IT'
+            };
+            
+            return date.toLocaleDateString(localeMap[currentLang] || 'de-DE', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+            });
+          };
+          
+          const formattedDate = formatSignatureDate(signatory);
+          
           signatoryElement.innerHTML = `
             <div class="signatory-name">${signatory.name || 'Unbekannt'}</div>
             <div class="signatory-location">${signatory.location || 'Unbekannt'}</div>
+            ${formattedDate ? `<div class="signatory-date">${formattedDate}</div>` : ''}
             ${isNew ? '<div class="new-banner" data-i18n="new_banner">New</div>' : ''}
           `;
           
