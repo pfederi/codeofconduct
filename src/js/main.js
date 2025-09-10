@@ -485,6 +485,24 @@ function initForm() {
   });
 }
 
+// Helper function to capitalize the first letter of each word in a name
+// Handles spaces, hyphens (-), and apostrophes (')
+function capitalizeFirstLetter(name) {
+  if (!name) return name;
+  
+  return name
+    // Split by spaces, hyphens, and apostrophes while keeping the separators
+    .split(/(\s|-|')/)
+    .map(part => {
+      // If it's a separator (space, hyphen, apostrophe) or empty, return as is
+      if (part.match(/^\s|-|'$/) || part.length === 0) return part;
+      
+      // Capitalize first letter, lowercase the rest
+      return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+    })
+    .join('');
+}
+
 // Extract form submission processing to a separate function
 async function processFormSubmission(form, name, location, submitButton, originalText, signatoriesList) {
   try {
@@ -531,7 +549,7 @@ async function processFormSubmission(form, name, location, submitButton, origina
     });
     
     newSignatory.innerHTML = `
-      <div class="signatory-name">${name}</div>
+      <div class="signatory-name">${capitalizeFirstLetter(name)}</div>
       <div class="signatory-location">${location}</div>
       <div class="signatory-date">${currentDate}</div>
       <div class="new-banner" data-i18n="new_banner">New</div>
@@ -864,7 +882,7 @@ function displaySignatories(signatories) {
           const formattedDate = formatSignatureDate(signatory);
           
           signatoryElement.innerHTML = `
-            <div class="signatory-name">${signatory.name || 'Unbekannt'}</div>
+            <div class="signatory-name">${capitalizeFirstLetter(signatory.name) || 'Unbekannt'}</div>
             <div class="signatory-location">${signatory.location || 'Unbekannt'}</div>
             ${formattedDate ? `<div class="signatory-date">${formattedDate}</div>` : ''}
             ${isNew ? '<div class="new-banner" data-i18n="new_banner">New</div>' : ''}
