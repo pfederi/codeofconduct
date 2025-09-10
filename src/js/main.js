@@ -533,7 +533,7 @@ async function processFormSubmission(form, name, location, submitButton, origina
     newSignatory.style.opacity = '1';  // Ensure visible immediately
     newSignatory.style.transform = 'translateY(0)';  // No initial transform
     
-    // Format current date for new signatory
+    // Format the actual creation date from the signatory object
     const currentLang = document.documentElement.getAttribute('lang') || 'de';
     const localeMap = {
       'de': 'de-DE',
@@ -542,7 +542,9 @@ async function processFormSubmission(form, name, location, submitButton, origina
       'it': 'it-IT'
     };
     
-    const currentDate = new Date().toLocaleDateString(localeMap[currentLang] || 'de-DE', {
+    // Use the actual creation date from the database response
+    const creationDate = signatory.date ? new Date(signatory.date) : new Date();
+    const formattedDate = creationDate.toLocaleDateString(localeMap[currentLang] || 'de-DE', {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
@@ -551,7 +553,7 @@ async function processFormSubmission(form, name, location, submitButton, origina
     newSignatory.innerHTML = `
       <div class="signatory-name">${capitalizeFirstLetter(name)}</div>
       <div class="signatory-location">${location}</div>
-      <div class="signatory-date">${currentDate}</div>
+      <div class="signatory-date">${formattedDate}</div>
       <div class="new-banner" data-i18n="new_banner">New</div>
     `;
     
@@ -697,7 +699,7 @@ function applyTranslationsToNewElements(lang) {
 // Helper function to update signature dates when language changes
 function updateSignatureDates(lang) {
   // Don't reload signatories on language change to avoid multiple load more buttons
-  // Instead, just update the existing date elements
+  // Instead, just update the existing date elements by re-formatting them in the new language
   const localeMap = {
     'de': 'de-DE',
     'en': 'en-US', 
@@ -709,31 +711,57 @@ function updateSignatureDates(lang) {
   document.querySelectorAll('.signatory').forEach(signatoryElement => {
     const dateElement = signatoryElement.querySelector('.signatory-date');
     if (dateElement) {
-      // Try to extract and reformat the date
+      // Try to extract the original date from the text
       const dateText = dateElement.textContent.trim();
-      // Simple approach: try to parse various date formats
-      let date = null;
+      let originalDate = null;
       
-      // Try parsing different formats
-      const formats = [
-        /(\d{1,2})\.\s*(\w+)\s*(\d{4})/,  // German: "15. Dezember 2024"
-        /(\w+)\s*(\d{1,2}),?\s*(\d{4})/,  // English: "December 15, 2024"
-        /(\d{1,2})\s*(\w+)\s*(\d{4})/     // French/Italian: "15 décembre 2024"
-      ];
+      // Try to parse the existing date text to extract the actual date
+      // This is a bit complex because we need to handle different language formats
+      const monthNames = {
+        'de': ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+        'en': ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        'fr': ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+        'it': ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre']
+      };
       
-      // For simplicity, we'll create a new date and format it
-      // This is not perfect but works for the current use case
-      const now = new Date();
-      const formattedDate = now.toLocaleDateString(localeMap[lang] || 'de-DE', {
+      // Try to extract day, month, and year from the text
+      const dateMatch = dateText.match(/(\d{1,2})[\.\s]*(\w+)[\s,]*(\d{4})/);
+      if (dateMatch) {
+        const day = parseInt(dateMatch[1]);
+        const monthText = dateMatch[2];
+        const year = parseInt(dateMatch[3]);
+        
+        // Find the month number by checking all language month names
+        let monthIndex = -1;
+        for (const [langKey, months] of Object.entries(monthNames)) {
+          const index = months.findIndex(month => 
+            month.toLowerCase() === monthText.toLowerCase()
+          );
+          if (index !== -1) {
+            monthIndex = index;
+            break;
+          }
+        }
+        
+        if (monthIndex !== -1) {
+          // Create a date object with the extracted values
+          originalDate = new Date(year, monthIndex, day);
+        }
+      }
+      
+      // If we couldn't parse the date, skip this element
+      if (!originalDate || isNaN(originalDate.getTime())) {
+        return;
+      }
+      
+      // Format the date in the new language
+      const formattedDate = originalDate.toLocaleDateString(localeMap[lang] || 'de-DE', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
       });
       
-      // Only update if it looks like a date
-      if (dateText.match(/\d{4}/)) {
-        dateElement.textContent = formattedDate;
-      }
+      dateElement.textContent = formattedDate;
     }
   });
 }

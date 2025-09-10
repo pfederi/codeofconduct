@@ -95,7 +95,8 @@ export async function loadSignatoriesFromDb() {
             id: doc.id,
             name: data.name || "Unbekannt",
             location: data.location || "Unbekannt",
-            date: data.date || (data.timestamp ? data.timestamp.toDate().toISOString() : new Date().toISOString())
+            date: data.date || (data.timestamp ? data.timestamp.toDate().toISOString() : new Date().toISOString()),
+            timestamp: data.timestamp || data.date
           });
         } catch (docError) {
           console.error("Error processing document:", docError);
