@@ -51,6 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSignatories();
   }, 500);
   
+  // Initialize sort dropdown
+  initSortDropdown();
+  
   // Update banner styling and dates when language changes
   document.addEventListener('languageChanged', (event) => {
     const lang = event.detail.language;
@@ -622,8 +625,8 @@ async function loadSignatories() {
   
   if (!signatoriesList) return;
   
-  // Remove any existing load more buttons
-  document.querySelectorAll('.load-more-container').forEach(container => {
+  // Remove any existing pagination containers
+  document.querySelectorAll('.pagination-container').forEach(container => {
     container.remove();
   });
   
@@ -681,12 +684,6 @@ function applyTranslationsToNewElements(lang) {
         }
       });
       
-      // Apply translations to load more button
-      document.querySelectorAll('.load-more-btn[data-i18n="load_more_button"]').forEach(element => {
-        if (translations['load_more_button']) {
-          element.textContent = translations['load_more_button'];
-        }
-      });
       
       // Update signature dates with correct language formatting
       updateSignatureDates(lang);
@@ -812,10 +809,18 @@ function displaySignatories(signatories) {
     return;
   }
   
+  // Store signatories globally for sorting
+  allSignatories = signatories;
+  
   // Animate counter
   animateSignatureCounter(signatories.length);
   
-  const loadMoreContainer = document.createElement('div');
+  // Remove any existing pagination containers
+  document.querySelectorAll('.pagination-container').forEach(container => {
+    container.remove();
+  });
+  
+  const paginationContainer = document.createElement('div');
   
   // Clear existing content
   signatoriesList.innerHTML = '';
@@ -824,41 +829,96 @@ function displaySignatories(signatories) {
   const SIGNATORIES_PER_PAGE = 12;
   let currentPage = 1;
   
-  // Sort signatories: new ones first (chronological), then old ones (random)
+  // Filter and sort signatories
   try {
-    const newSignatories = [];
-    const oldSignatories = [];
+    // First, filter by search term if present
+    let filteredSignatories = signatories;
+    if (currentSearchTerm) {
+      filteredSignatories = signatories.filter(signatory => {
+        const name = (signatory.name || '').toLowerCase();
+        const location = (signatory.location || '').toLowerCase();
+        return name.includes(currentSearchTerm) || location.includes(currentSearchTerm);
+      });
+    }
     
-    // Separate new and old signatories
-    signatories.forEach(signatory => {
-      if (isSignatoryNew(signatory)) {
-        newSignatories.push(signatory);
-      } else {
-        oldSignatories.push(signatory);
-      }
-    });
+    // Then sort the filtered results
+    let sortedSignatories = [...filteredSignatories];
     
-    // Sort new signatories chronologically (newest first)
-    newSignatories.sort((a, b) => {
-      const timestampA = a.timestamp?.seconds ? new Date(a.timestamp.seconds * 1000) : new Date(a.timestamp || a.date || 0);
-      const timestampB = b.timestamp?.seconds ? new Date(b.timestamp.seconds * 1000) : new Date(b.timestamp || b.date || 0);
-      return timestampB - timestampA;
-    });
+    switch (currentSortOrder) {
+      case 'newest':
+        // Sort by date, newest first
+        sortedSignatories.sort((a, b) => {
+          const timestampA = a.timestamp?.seconds ? new Date(a.timestamp.seconds * 1000) : new Date(a.timestamp || a.date || 0);
+          const timestampB = b.timestamp?.seconds ? new Date(b.timestamp.seconds * 1000) : new Date(b.timestamp || b.date || 0);
+          return timestampB - timestampA;
+        });
+        break;
+        
+      case 'oldest':
+        // Sort by date, oldest first
+        sortedSignatories.sort((a, b) => {
+          const timestampA = a.timestamp?.seconds ? new Date(a.timestamp.seconds * 1000) : new Date(a.timestamp || a.date || 0);
+          const timestampB = b.timestamp?.seconds ? new Date(b.timestamp.seconds * 1000) : new Date(b.timestamp || b.date || 0);
+          return timestampA - timestampB;
+        });
+        break;
+        
+      case 'name-asc':
+        // Sort by name A-Z
+        sortedSignatories.sort((a, b) => {
+          const nameA = (a.name || '').toLowerCase();
+          const nameB = (b.name || '').toLowerCase();
+          return nameA.localeCompare(nameB);
+        });
+        break;
+        
+      case 'name-desc':
+        // Sort by name Z-A
+        sortedSignatories.sort((a, b) => {
+          const nameA = (a.name || '').toLowerCase();
+          const nameB = (b.name || '').toLowerCase();
+          return nameB.localeCompare(nameA);
+        });
+        break;
+        
+      case 'location-asc':
+        // Sort by location A-Z (ignore postal codes at the beginning)
+        sortedSignatories.sort((a, b) => {
+          // Remove postal codes (numbers at the beginning) from location
+          const locationA = (a.location || '').replace(/^\d+\s*/, '').toLowerCase();
+          const locationB = (b.location || '').replace(/^\d+\s*/, '').toLowerCase();
+          return locationA.localeCompare(locationB);
+        });
+        break;
+        
+      case 'location-desc':
+        // Sort by location Z-A (ignore postal codes at the beginning)
+        sortedSignatories.sort((a, b) => {
+          // Remove postal codes (numbers at the beginning) from location
+          const locationA = (a.location || '').replace(/^\d+\s*/, '').toLowerCase();
+          const locationB = (b.location || '').replace(/^\d+\s*/, '').toLowerCase();
+          return locationB.localeCompare(locationA);
+        });
+        break;
+    }
     
-    // Randomize old signatories
-    oldSignatories.sort(() => Math.random() - 0.5);
+    // Calculate total pages
+    const totalPages = Math.ceil(sortedSignatories.length / SIGNATORIES_PER_PAGE);
     
-    // Combine: new ones first, then old ones
-    const sortedSignatories = [...newSignatories, ...oldSignatories];
-    
-    // Function to display a batch of signatories
-    const displaySignatoriesBatch = (start, count) => {
+    // Function to display a specific page of signatories
+    const displayPage = (page) => {
       try {
+        // Clear current signatories
+        signatoriesList.innerHTML = '';
+        
         // Create a document fragment for better performance
         const fragment = document.createDocumentFragment();
         
-        // Display the signatories
-        for (let i = start; i < start + count && i < sortedSignatories.length; i++) {
+        const startIndex = (page - 1) * SIGNATORIES_PER_PAGE;
+        const endIndex = Math.min(startIndex + SIGNATORIES_PER_PAGE, sortedSignatories.length);
+        
+        // Display the signatories for this page
+        for (let i = startIndex; i < endIndex; i++) {
           const signatory = sortedSignatories[i];
           
           if (!signatory) {
@@ -925,42 +985,126 @@ function displaySignatories(signatories) {
         // Apply translations to new banner elements
         const currentLang = document.documentElement.getAttribute('lang') || 'de';
         applyTranslationsToNewElements(currentLang);
+        
+        // Update pagination UI
+        updatePaginationUI(page, totalPages);
       } catch (batchError) {
-        console.error('Error displaying signatories batch:', batchError);
+        console.error('Error displaying signatories page:', batchError);
       }
     };
     
-    // Create and configure "Load More" button
-    loadMoreContainer.className = 'load-more-container';
-    loadMoreContainer.innerHTML = '<button class="btn btn-secondary load-more-btn" data-i18n="load_more_button">Load More</button>';
-    
-    // Display first batch of signatories
-    displaySignatoriesBatch(0, SIGNATORIES_PER_PAGE);
-    
-    // Add Load More button if there are more signatories
-    if (sortedSignatories.length > SIGNATORIES_PER_PAGE) {
-      signatoriesList.after(loadMoreContainer);
-      
-      // Apply translation to load more button
-      const currentLang = document.documentElement.getAttribute('lang') || 'de';
-      applyTranslationsToNewElements(currentLang);
-      
-      // Add event listener to Load More button
-      const loadMoreBtn = loadMoreContainer.querySelector('.load-more-btn');
-      if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', () => {
-          currentPage++;
-          const startIndex = (currentPage - 1) * SIGNATORIES_PER_PAGE;
-          
-          // Display next batch
-          displaySignatoriesBatch(startIndex, SIGNATORIES_PER_PAGE);
-          
-          // Hide button if all signatories are displayed
-          if (startIndex + SIGNATORIES_PER_PAGE >= sortedSignatories.length) {
-            loadMoreContainer.style.display = 'none';
-          }
-        });
+    // Function to update pagination UI
+    const updatePaginationUI = (page, totalPages) => {
+      if (totalPages <= 1) {
+        paginationContainer.style.display = 'none';
+        return;
       }
+      
+      paginationContainer.className = 'pagination-container';
+      paginationContainer.innerHTML = '';
+      
+      // Previous button
+      const prevBtn = document.createElement('button');
+      prevBtn.className = 'pagination-btn pagination-prev';
+      prevBtn.innerHTML = '&laquo;';
+      prevBtn.disabled = page === 1;
+      prevBtn.addEventListener('click', () => {
+        if (page > 1) {
+          currentPage--;
+          displayPage(currentPage);
+        }
+      });
+      paginationContainer.appendChild(prevBtn);
+      
+      // Page numbers
+      const pageNumbersContainer = document.createElement('div');
+      pageNumbersContainer.className = 'pagination-numbers';
+      
+      // Calculate which page numbers to show
+      const maxVisiblePages = 5;
+      let startPage = Math.max(1, page - Math.floor(maxVisiblePages / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+      
+      // Adjust if we're near the end
+      if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+      
+      // First page + ellipsis if needed
+      if (startPage > 1) {
+        const firstPageBtn = document.createElement('button');
+        firstPageBtn.className = 'pagination-btn pagination-number';
+        firstPageBtn.textContent = '1';
+        firstPageBtn.addEventListener('click', () => {
+          currentPage = 1;
+          displayPage(currentPage);
+        });
+        pageNumbersContainer.appendChild(firstPageBtn);
+        
+        if (startPage > 2) {
+          const ellipsis = document.createElement('span');
+          ellipsis.className = 'pagination-ellipsis';
+          ellipsis.textContent = '...';
+          pageNumbersContainer.appendChild(ellipsis);
+        }
+      }
+      
+      // Page number buttons
+      for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.className = 'pagination-btn pagination-number';
+        if (i === page) {
+          pageBtn.classList.add('active');
+        }
+        pageBtn.textContent = i;
+        pageBtn.addEventListener('click', () => {
+          currentPage = i;
+          displayPage(currentPage);
+        });
+        pageNumbersContainer.appendChild(pageBtn);
+      }
+      
+      // Last page + ellipsis if needed
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          const ellipsis = document.createElement('span');
+          ellipsis.className = 'pagination-ellipsis';
+          ellipsis.textContent = '...';
+          pageNumbersContainer.appendChild(ellipsis);
+        }
+        
+        const lastPageBtn = document.createElement('button');
+        lastPageBtn.className = 'pagination-btn pagination-number';
+        lastPageBtn.textContent = totalPages;
+        lastPageBtn.addEventListener('click', () => {
+          currentPage = totalPages;
+          displayPage(currentPage);
+        });
+        pageNumbersContainer.appendChild(lastPageBtn);
+      }
+      
+      paginationContainer.appendChild(pageNumbersContainer);
+      
+      // Next button
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'pagination-btn pagination-next';
+      nextBtn.innerHTML = '&raquo;';
+      nextBtn.disabled = page === totalPages;
+      nextBtn.addEventListener('click', () => {
+        if (page < totalPages) {
+          currentPage++;
+          displayPage(currentPage);
+        }
+      });
+      paginationContainer.appendChild(nextBtn);
+    };
+    
+    // Display first page
+    displayPage(1);
+    
+    // Add pagination if there are more signatories
+    if (totalPages > 1) {
+      signatoriesList.after(paginationContainer);
     }
   } catch (error) {
     console.error('Error in displaySignatories:', error);
@@ -1168,6 +1312,14 @@ function initLanguageSwitcher() {
             } else {
               element.textContent = translations[key];
             }
+          }
+        });
+        
+        // Apply translations to elements with data-i18n-placeholder attribute
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+          const key = element.getAttribute('data-i18n-placeholder');
+          if (translations[key]) {
+            element.placeholder = translations[key];
           }
         });
         
@@ -1628,3 +1780,33 @@ document.addEventListener('keydown', function(event) {
     closeWakethievingModal();
   }
 });
+
+// Global variable to store all signatories for sorting and filtering
+let allSignatories = [];
+let currentSortOrder = 'newest';
+let currentSearchTerm = '';
+
+// Initialize sort dropdown
+function initSortDropdown() {
+  const sortSelect = document.getElementById('sort-select');
+  const searchInput = document.getElementById('search-input');
+  
+  if (!sortSelect) return;
+  
+  sortSelect.addEventListener('change', (e) => {
+    currentSortOrder = e.target.value;
+    if (allSignatories.length > 0) {
+      displaySignatories(allSignatories);
+    }
+  });
+  
+  // Initialize search input
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      currentSearchTerm = e.target.value.toLowerCase().trim();
+      if (allSignatories.length > 0) {
+        displaySignatories(allSignatories);
+      }
+    });
+  }
+}

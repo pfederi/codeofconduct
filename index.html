@@ -345,6 +345,22 @@
           <span class="signature-counter">0</span>
           <span class="signature-counter-text" data-i18n="signature_counter_text">Unterzeichner</span>
         </div>
+        <div class="signatories-controls">
+          <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="Suchen..." data-i18n-placeholder="search_placeholder">
+          </div>
+          <div class="sort-container">
+            <label for="sort-select" class="sort-label" data-i18n="sort_label">Sortieren:</label>
+            <select id="sort-select" class="sort-select">
+              <option value="newest" data-i18n="sort_newest">Neueste zuerst</option>
+              <option value="oldest" data-i18n="sort_oldest">Älteste zuerst</option>
+              <option value="name-asc" data-i18n="sort_name_asc">Name (A-Z)</option>
+              <option value="name-desc" data-i18n="sort_name_desc">Name (Z-A)</option>
+              <option value="location-asc" data-i18n="sort_location_asc">Ort (A-Z)</option>
+              <option value="location-desc" data-i18n="sort_location_desc">Ort (Z-A)</option>
+            </select>
+          </div>
+        </div>
         <div class="signatories-list" id="signatories-list">
           <!-- Signatories will be loaded from Firestore database -->
           <div class="loading">Signatories laden...</div>

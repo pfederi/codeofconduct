@@ -1038,23 +1038,174 @@ a {
     }
   }
   
-  .load-more-container {
-    text-align: center;
-    margin: 3rem auto 4rem;
+  .signatories-controls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
     
-    .load-more-btn {
-      padding: 1rem 2.4rem;
+    .search-container {
+      max-width: 250px;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 0.8rem 1.2rem;
+      font-size: 1.6rem;
+      color: $primary-color;
+      background-color: white;
+      border: 2px solid $secondary-color;
+      border-radius: 0;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      
+      &::placeholder {
+        color: rgba($primary-color, 0.5);
+      }
+      
+      &:hover {
+        border-color: $accent-color;
+      }
+      
+      &:focus {
+        outline: none;
+        border-color: $accent-color;
+        box-shadow: 0 0 0 3px rgba($accent-color, 0.1);
+      }
+    }
+    
+    .sort-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .sort-label {
+      font-size: 1.6rem;
+      color: $primary-color;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    
+    .sort-select {
+      padding: 0.8rem 3rem 0.8rem 1.2rem;
+      font-size: 1.6rem;
+      color: $primary-color;
+      background-color: white;
+      border: 2px solid $secondary-color;
+      border-radius: 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23304269' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1.2rem center;
+      background-size: 12px;
+      
+      &:hover {
+        border-color: $accent-color;
+      }
+      
+      &:focus {
+        outline: none;
+        border-color: $accent-color;
+        box-shadow: 0 0 0 3px rgba($accent-color, 0.1);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+      
+      .search-container {
+        max-width: none;
+      }
+      
+      .sort-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+      
+      .sort-select {
+        width: 100%;
+      }
+    }
+  }
+  
+  .pagination-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem auto 4rem;
+    flex-wrap: wrap;
+    
+    .pagination-btn {
+      min-width: 4rem;
+      height: 4rem;
+      padding: 0 1.2rem;
       background-color: transparent;
-      color: $accent-color;
-      border: 2px solid $accent-color;
+      color: $primary-color;
+      border: 2px solid $secondary-color;
       font-size: 1.6rem;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       
-      &:hover {
+      &:hover:not(:disabled) {
+        background-color: $secondary-color;
+        color: white;
+        transform: translateY(-2px);
+      }
+      
+      &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+      
+      &.active {
         background-color: $accent-color;
         color: white;
+        border-color: $accent-color;
+      }
+    }
+    
+    .pagination-numbers {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    
+    .pagination-ellipsis {
+      color: $primary-color;
+      font-size: 1.6rem;
+      padding: 0 0.5rem;
+    }
+    
+    .pagination-prev,
+    .pagination-next {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    
+    @media (max-width: 768px) {
+      gap: 0.5rem;
+      
+      .pagination-btn {
+        min-width: 3.5rem;
+        height: 3.5rem;
+        font-size: 1.4rem;
+      }
+      
+      .pagination-numbers {
+        gap: 0.3rem;
       }
     }
   }
