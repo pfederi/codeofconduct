@@ -232,7 +232,7 @@
               <p data-i18n="wakethieving_description">Diese Regeln stehen nicht direkt im Zusammenhang mit dem Code of Conduct, sind aber für Pumpfoiler relevant, die die Wellen von Kursschiffen fahren möchten.</p>
             </div>
             <div class="wakethieving-link-container">
-              <a href="https://nextwaveapp.ch/#rules" target="_blank" rel="noopener noreferrer" class="btn btn-secondary wakethieving-btn" data-i18n="wakethieving_button">Zu den Wakethieving Rules</a>
+              <button class="btn btn-secondary wakethieving-btn" data-i18n="wakethieving_button" onclick="openWakethievingModal()">Zu den Wakethieving Rules</button>
             </div>
             <div class="conduct-icon">
               <svg width="240" height="240" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="svg-icon wakethieving-icon">
@@ -328,12 +328,6 @@
               <img src="./src/images/supporters/foilmates-logo.png" alt="Foilmates App Logo">
             </a>
           </div>
-          <!-- Smartfoil -->
-          <div class="supporter-logo reveal-item">
-            <a href="https://www.getsmartfoil.com/" target="_blank" rel="noopener noreferrer">
-              <img src="./src/images/supporters/smartfoil-logo.png" alt="Smartfoil Logo">
-            </a>
-          </div>
           <!-- FoilMotion -->
           <div class="supporter-logo reveal-item">
             <a href="https://foilmotion.webchoice.ch/" target="_blank" rel="noopener noreferrer">
@@ -427,6 +421,19 @@
       </div>
     </div>
   </footer>
+
+  <!-- Wakethieving Rules Modal -->
+  <div id="wakethieving-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-title">Wakethieving Rules</h2>
+        <button class="modal-close" onclick="closeWakethievingModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <div class="loading">Lade Wakethieving Rules...</div>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="/src/js/main.js"></script>
 </body>

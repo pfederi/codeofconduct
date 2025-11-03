@@ -1311,3 +1311,320 @@ function initEqualWidthButtons() {
   // Update again after all content is loaded
   window.addEventListener('load', updateButtonWidths);
 }
+
+// Wakethieving Modal Functions
+window.openWakethievingModal = async function() {
+  const modal = document.getElementById('wakethieving-modal');
+  const modalBody = document.getElementById('modal-body');
+  const modalTitle = document.getElementById('modal-title');
+  
+  if (!modal || !modalBody || !modalTitle) return;
+  
+  // Show modal
+  modal.classList.add('active');
+  document.body.classList.add('no-scroll');
+  
+  // Show loading state
+  modalBody.innerHTML = '<div class="loading">Lade Wakethieving Rules...</div>';
+  
+  try {
+    // Fetch wakethieving rules from GitHub API
+    const response = await fetch('https://raw.githubusercontent.com/pfederi/wakethievingrules/main/wakethieving-rules.json');
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const apiData = await response.json();
+    
+    // Detect current language from page
+    const currentLang = document.documentElement.getAttribute('lang') || 'de';
+    
+    // Get language-specific data, fallback to English if not available
+    let rulesData;
+    if (apiData.languages && apiData.languages[currentLang]) {
+      rulesData = apiData.languages[currentLang];
+    } else if (apiData.languages && apiData.languages['en']) {
+      rulesData = apiData.languages['en'];
+    } else {
+      // Backward compatibility for old structure
+      rulesData = apiData;
+    }
+    
+    // Language-specific translations for UI elements
+    const translations = {
+      'de': { learnMore: 'Mehr erfahren' },
+      'en': { learnMore: 'Learn more' },
+      'fr': { learnMore: 'En savoir plus' },
+      'it': { learnMore: 'Scopri di più' }
+    };
+    const currentTranslations = translations[currentLang] || translations['de'];
+    
+    // Update modal title
+    modalTitle.textContent = rulesData.content?.title || rulesData.title || 'Wakethieving Rules';
+    
+    // Build content HTML
+    let contentHTML = '';
+    
+    // Add subtitle if available
+    const subtitle = rulesData.content?.subtitle || rulesData.subtitle;
+    if (subtitle) {
+      contentHTML += `<p style="font-size: 1.8rem; margin-bottom: 3rem; color: #304269; font-weight: 400; line-height: 1.5; max-width: none;">${subtitle}</p>`;
+    }
+    
+    if (rulesData.rules && Array.isArray(rulesData.rules)) {
+      rulesData.rules.forEach((rule, index) => {
+        // Skip community rule entirely
+        if (rule.id === 'community') {
+          return;
+        }
+        
+        contentHTML += `<div class="rule-category">`;
+        
+        // Add rule icon if available (check both apiData.icons and rulesData.icons)
+        const icons = apiData.icons || rulesData.icons;
+        if (icons && rule.icon && icons[rule.icon]) {
+          contentHTML += `<div style="display: flex; align-items: center; margin-bottom: 1.5rem;">`;
+          
+          // Parse SVG path and handle multiple paths if needed
+          const iconPath = icons[rule.icon];
+          let svgContent = '';
+          
+          // Split complex paths that contain multiple path commands
+          if (iconPath.includes('M') && iconPath.indexOf('M', 1) > 0) {
+            // Multiple paths in one string - split them
+            const paths = iconPath.split(/(?=M)/).filter(p => p.trim());
+            paths.forEach(path => {
+              svgContent += `<path d="${path.trim()}" stroke="#304269" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+            });
+          } else {
+            // Single path
+            svgContent = `<path d="${iconPath}" stroke="#304269" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+          }
+          
+          contentHTML += `<svg width="32" height="32" viewBox="0 0 24 24" style="margin-right: 1rem; flex-shrink: 0;">`;
+          contentHTML += svgContent;
+          contentHTML += `</svg>`;
+          contentHTML += `<h3 style="margin: 0;">${rule.title}</h3>`;
+          contentHTML += `</div>`;
+        } else {
+          contentHTML += `<h3>${rule.title}</h3>`;
+        }
+        
+        contentHTML += `<div class="rule-content">`;
+        
+        // Handle different content structures based on actual API format
+        if (rule.content) {
+          // Handle text content
+          if (typeof rule.content === 'string') {
+            contentHTML += `<p>${rule.content}</p>`;
+          } else if (typeof rule.content === 'object') {
+            
+            // Handle intro text
+            if (rule.content.intro) {
+              contentHTML += `<p>${rule.content.intro}</p>`;
+            }
+            
+            // Handle main content section
+            if (rule.content.main) {
+              if (typeof rule.content.main === 'string') {
+                contentHTML += `<p>${rule.content.main}</p>`;
+              } else if (typeof rule.content.main === 'object') {
+                if (rule.content.main.title) {
+                  contentHTML += `<h4>${rule.content.main.title}</h4>`;
+                }
+                if (rule.content.main.description) {
+                  contentHTML += `<p>${rule.content.main.description}</p>`;
+                }
+              }
+            }
+            
+            // Handle daytime/nighttime sections
+            if (rule.content.daytime) {
+              if (rule.content.daytime.title) {
+                contentHTML += `<h4>${rule.content.daytime.title}</h4>`;
+              }
+              if (rule.content.daytime.description) {
+                contentHTML += `<p>${rule.content.daytime.description}</p>`;
+              }
+            }
+            
+            if (rule.content.nighttime) {
+              if (rule.content.nighttime.title) {
+                contentHTML += `<h4>${rule.content.nighttime.title}</h4>`;
+              }
+              if (rule.content.nighttime.description) {
+                contentHTML += `<p>${rule.content.nighttime.description}</p>`;
+              }
+            }
+            
+            // Handle rules lists
+            if (rule.content.rules && Array.isArray(rule.content.rules)) {
+              contentHTML += '<ul>';
+              rule.content.rules.forEach(subRule => {
+                if (typeof subRule === 'string') {
+                  contentHTML += `<li>${subRule}</li>`;
+                } else if (typeof subRule === 'object') {
+                  let ruleText = '';
+                  if (subRule.title && subRule.description) {
+                    ruleText = `<strong>${subRule.title}</strong> - ${subRule.description}`;
+                  } else {
+                    ruleText = subRule.title || subRule.text || subRule.description;
+                  }
+                  contentHTML += `<li>${ruleText}</li>`;
+                }
+              });
+              contentHTML += '</ul>';
+            }
+            
+            // Handle equipment section
+            if (rule.content.equipment && Array.isArray(rule.content.equipment)) {
+              contentHTML += '<ul>';
+              rule.content.equipment.forEach(item => {
+                if (typeof item === 'string') {
+                  contentHTML += `<li>${item}</li>`;
+                } else if (typeof item === 'object') {
+                  let equipText = '';
+                  if (item.title && item.description) {
+                    equipText = `<strong>${item.title}</strong> - ${item.description}`;
+                  } else {
+                    equipText = item.title || item.name || item.description;
+                  }
+                  contentHTML += `<li>${equipText}</li>`;
+                }
+              });
+              contentHTML += '</ul>';
+              
+              // Add local info box for safety equipment
+              if (rule.id === 'safety-equipment') {
+                const localInfoText = {
+                  'de': 'Restube bietet aufblasbare Schwimmwesten, die perfekt für diese Anforderung sind. 10% Rabatt mit Code: FEDERI10X',
+                  'en': 'Restube offers inflatable life jackets perfect for this requirement. 10% discount with code: FEDERI10X',
+                  'fr': 'Restube propose des gilets de sauvetage gonflables parfaits pour cette exigence. 10% de réduction avec le code: FEDERI10X',
+                  'it': 'Restube offre giubbotti di salvataggio gonfiabili perfetti per questo requisito. 10% di sconto con codice: FEDERI10X'
+                };
+                
+                contentHTML += `<div class="distance-info">`;
+                contentHTML += `<p><strong>ℹ️ ${localInfoText[currentLang] || localInfoText['de']}</strong></p>`;
+                contentHTML += `<p><a href="https://indiana-paddlesurf.com/de_ch/shop/accessories/safety.html" target="_blank" rel="noopener noreferrer">${currentTranslations.learnMore}</a></p>`;
+                contentHTML += `</div>`;
+              }
+            } else {
+              // Add local info box for safety equipment (when no equipment array exists)
+              if (rule.id === 'safety-equipment') {
+                const localInfoText = {
+                  'de': 'Restube bietet aufblasbare Schwimmwesten, die perfekt für diese Anforderung sind. 10% Rabatt mit Code: FEDERI10X',
+                  'en': 'Restube offers inflatable life jackets perfect for this requirement. 10% discount with code: FEDERI10X',
+                  'fr': 'Restube propose des gilets de sauvetage gonflables parfaits pour cette exigence. 10% de réduction avec le code: FEDERI10X',
+                  'it': 'Restube offre giubbotti di salvataggio gonfiabili perfetti per questo requisito. 10% di sconto con codice: FEDERI10X'
+                };
+                
+                contentHTML += `<div class="distance-info">`;
+                contentHTML += `<p><strong>ℹ️ ${localInfoText[currentLang] || localInfoText['de']}</strong></p>`;
+                contentHTML += `<p><a href="https://indiana-paddlesurf.com/de_ch/shop/accessories/safety.html" target="_blank" rel="noopener noreferrer">${currentTranslations.learnMore}</a></p>`;
+                contentHTML += `</div>`;
+              }
+            }
+            
+            // Handle warning section
+            if (rule.content.warning) {
+              contentHTML += `<div class="distance-info" style="border-left-color: #F26101; background-color: rgba(242, 97, 1, 0.05);">`;
+              if (typeof rule.content.warning === 'string') {
+                contentHTML += `<strong>⚠️ ${rule.content.warning}</strong>`;
+              } else if (typeof rule.content.warning === 'object') {
+                if (rule.content.warning.text) {
+                  contentHTML += `<strong>⚠️ ${rule.content.warning.text}</strong>`;
+                }
+                if (rule.content.warning.title) {
+                  contentHTML += `<strong>⚠️ ${rule.content.warning.title}</strong>`;
+                }
+                if (rule.content.warning.description) {
+                  contentHTML += `<p>${rule.content.warning.description}</p>`;
+                }
+              }
+              contentHTML += `</div>`;
+            }
+            
+            // Handle description (for community section) - but skip community rule entirely
+            if (rule.content.description && !rule.content.main && rule.id !== 'community') {
+              contentHTML += `<p>${rule.content.description}</p>`;
+            }
+            
+            // All content types are now handled above with the new API structure
+          }
+        }
+        
+        contentHTML += `</div>`;
+        contentHTML += `</div>`;
+      });
+    }
+    
+    // Add footer message from new API structure
+    const footerMessage = rulesData.ui?.footer?.message || rulesData.footer?.message;
+    if (footerMessage) {
+      contentHTML += `<p style="margin-top: 4rem; font-size: 1.8rem; font-weight: 500; color: #304269;">${footerMessage}</p>`;
+    }
+    
+    // Add API source information
+    if (apiData.api) {
+      const apiInfo = apiData.api;
+      const sourceText = rulesData.ui?.apiSource || 'Rules loaded from Wakethieving Rules API';
+      const apiUrl = 'https://github.com/pfederi/wakethievingrules';
+      
+      let apiInfoText = `<a href="${apiUrl}" target="_blank" rel="noopener noreferrer" style="color: #304269; text-decoration: none;">${sourceText}</a>`;
+      
+      if (apiInfo.version) {
+        apiInfoText += ` • Version ${apiInfo.version}`;
+      }
+      
+      if (apiInfo.lastUpdated) {
+        const date = new Date(apiInfo.lastUpdated);
+        const formattedDate = date.toLocaleDateString(currentLang === 'en' ? 'en-US' : 'de-DE');
+        apiInfoText += ` • Last updated: ${formattedDate}`;
+      }
+      
+      if (apiInfo.license) {
+        apiInfoText += ` • License: ${apiInfo.license}`;
+      }
+      
+      contentHTML += `<p style="margin-top: 3rem; font-size: 1.2rem; color: #666; font-style: italic; width: 100%; max-width: none; text-align: justify;">${apiInfoText}</p>`;
+    }
+    
+    // Update modal content
+    modalBody.innerHTML = contentHTML;
+    
+  } catch (error) {
+    console.error('Error loading wakethieving rules:', error);
+    modalBody.innerHTML = `
+      <div class="error">
+        <h3>Fehler beim Laden der Wakethieving Rules</h3>
+        <p>Die Regeln konnten nicht geladen werden. Bitte versuchen Sie es später erneut oder besuchen Sie direkt:</p>
+        <p><a href="https://nextwaveapp.ch/#rules" target="_blank" rel="noopener noreferrer">NextWave App - Wakethieving Rules</a></p>
+      </div>
+    `;
+  }
+};
+
+window.closeWakethievingModal = function() {
+  const modal = document.getElementById('wakethieving-modal');
+  
+  if (!modal) return;
+  
+  modal.classList.remove('active');
+  document.body.classList.remove('no-scroll');
+};
+
+// Close modal when clicking outside of it
+document.addEventListener('click', function(event) {
+  const modal = document.getElementById('wakethieving-modal');
+  if (modal && event.target === modal) {
+    closeWakethievingModal();
+  }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    closeWakethievingModal();
+  }
+});
