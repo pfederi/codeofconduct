@@ -1521,7 +1521,7 @@ window.openWakethievingModal = async function() {
     // Add subtitle if available
     const subtitle = rulesData.content?.subtitle || rulesData.subtitle;
     if (subtitle) {
-      contentHTML += `<p style="font-size: 1.8rem; margin-bottom: 3rem; color: #304269; font-weight: 400; line-height: 1.5; max-width: none;">${subtitle}</p>`;
+      contentHTML += `<p class="modal-subtitle">${subtitle}</p>`;
     }
     
     if (rulesData.rules && Array.isArray(rulesData.rules)) {
@@ -1547,14 +1547,19 @@ window.openWakethievingModal = async function() {
             // Multiple paths in one string - split them
             const paths = iconPath.split(/(?=M)/).filter(p => p.trim());
             paths.forEach(path => {
-              svgContent += `<path d="${path.trim()}" stroke="#304269" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+              svgContent += `<path d="${path.trim()}" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
             });
           } else {
             // Single path
-            svgContent = `<path d="${iconPath}" stroke="#304269" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+            svgContent = `<path d="${iconPath}" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
           }
           
-          contentHTML += `<svg width="32" height="32" viewBox="0 0 24 24" style="margin-right: 1rem; flex-shrink: 0;">`;
+          const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+          const svgStyle = isDarkMode 
+            ? 'margin-right: 1rem; flex-shrink: 0; color: #91BED4;'
+            : 'margin-right: 1rem; flex-shrink: 0; color: #304269;';
+          
+          contentHTML += `<svg width="32" height="32" viewBox="0 0 24 24" style="${svgStyle}">`;
           contentHTML += svgContent;
           contentHTML += `</svg>`;
           contentHTML += `<h3 style="margin: 0;">${rule.title}</h3>`;
@@ -1714,7 +1719,7 @@ window.openWakethievingModal = async function() {
     // Add footer message from new API structure
     const footerMessage = rulesData.ui?.footer?.message || rulesData.footer?.message;
     if (footerMessage) {
-      contentHTML += `<p style="margin-top: 4rem; font-size: 1.8rem; font-weight: 500; color: #304269;">${footerMessage}</p>`;
+      contentHTML += `<p class="modal-footer-text">${footerMessage}</p>`;
     }
     
     // Add API source information
@@ -1723,7 +1728,7 @@ window.openWakethievingModal = async function() {
       const sourceText = rulesData.ui?.apiSource || 'Rules loaded from Wakethieving Rules API';
       const apiUrl = 'https://github.com/pfederi/wakethievingrules';
       
-      let apiInfoText = `<a href="${apiUrl}" target="_blank" rel="noopener noreferrer" style="color: #304269; text-decoration: none;">${sourceText}</a>`;
+      let apiInfoText = `<a href="${apiUrl}" target="_blank" rel="noopener noreferrer">${sourceText}</a>`;
       
       if (apiInfo.version) {
         apiInfoText += ` • Version ${apiInfo.version}`;
@@ -1739,7 +1744,7 @@ window.openWakethievingModal = async function() {
         apiInfoText += ` • License: ${apiInfo.license}`;
       }
       
-      contentHTML += `<p style="margin-top: 3rem; font-size: 1.2rem; color: #666; font-style: italic; width: 100%; max-width: none; text-align: justify;">${apiInfoText}</p>`;
+      contentHTML += `<p class="modal-api-info">${apiInfoText}</p>`;
     }
     
     // Update modal content
@@ -1780,6 +1785,168 @@ document.addEventListener('keydown', function(event) {
     closeWakethievingModal();
   }
 });
+
+// Function to update the icon (needs to be accessible globally)
+function updateDarkModeIcon(isDark) {
+  const toggle = document.querySelector('.dark-mode-toggle');
+  const toggleThumb = toggle?.querySelector('.toggle-thumb');
+  
+  if (!toggleThumb) return;
+  
+  // Apple SF Symbols style icons
+  const sunIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2V4M12 20V22M4 12H2M6.31412 6.31412L4.8999 4.8999M17.6859 6.31412L19.1001 4.8999M6.31412 17.69L4.8999 19.1042M17.6859 17.69L19.1001 19.1042M22 12H20M17 12C17 14.7614 14.7614 17 12 17C9.23858 17 7 14.7614 7 12C7 9.23858 9.23858 7 12 7C14.7614 7 17 9.23858 17 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+  
+  const moonIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+  
+  toggleThumb.innerHTML = isDark ? moonIcon : sunIcon;
+}
+
+// Sunrise-Sunset API Integration
+async function getSunriseSunset(lat = 47.3769, lng = 8.5417) {
+  // Default coordinates: Zürich, Switzerland
+  try {
+    const response = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lng}&formatted=0`);
+    const data = await response.json();
+    
+    if (data.status === 'OK' && data.results) {
+      return {
+        sunrise: new Date(data.results.sunrise),
+        sunset: new Date(data.results.sunset)
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching sunrise/sunset data:', error);
+  }
+  return null;
+}
+
+function shouldUseDarkMode(sunrise, sunset) {
+  const now = new Date();
+  // Dark mode between sunset and sunrise
+  return now >= sunset || now < sunrise;
+}
+
+function setThemeBasedOnSun(sunrise, sunset) {
+  // Check if user has manually set theme preference
+  const manualTheme = localStorage.getItem('theme-manual');
+  if (manualTheme) {
+    // User has manually set theme, respect that
+    return;
+  }
+  
+  const isDark = shouldUseDarkMode(sunrise, sunset);
+  const theme = isDark ? 'dark' : 'light';
+  
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  
+  // Update toggle UI
+  const toggle = document.querySelector('.dark-mode-toggle');
+  if (toggle) {
+    toggle.setAttribute('aria-checked', isDark ? 'true' : 'false');
+    updateDarkModeIcon(isDark);
+  }
+}
+
+function scheduleThemeUpdate(sunrise, sunset) {
+  const now = new Date();
+  let nextUpdate;
+  
+  if (now < sunrise) {
+    // Before sunrise, next update is sunrise
+    nextUpdate = sunrise;
+  } else if (now < sunset) {
+    // Between sunrise and sunset, next update is sunset
+    nextUpdate = sunset;
+  } else {
+    // After sunset, next update is tomorrow's sunrise
+    const tomorrowSunrise = new Date(sunrise);
+    tomorrowSunrise.setDate(tomorrowSunrise.getDate() + 1);
+    nextUpdate = tomorrowSunrise;
+  }
+  
+  const msUntilUpdate = nextUpdate.getTime() - now.getTime();
+  
+  setTimeout(() => {
+    setThemeBasedOnSun(sunrise, sunset);
+    // Schedule next update
+    const newSunrise = new Date(sunrise);
+    const newSunset = new Date(sunset);
+    if (now >= sunset) {
+      newSunrise.setDate(newSunrise.getDate() + 1);
+      newSunset.setDate(newSunset.getDate() + 1);
+    }
+    scheduleThemeUpdate(newSunrise, newSunset);
+  }, msUntilUpdate);
+}
+
+// Dark Mode Toggle
+function initDarkModeToggle() {
+  const toggle = document.querySelector('.dark-mode-toggle');
+  const toggleThumb = toggle?.querySelector('.toggle-thumb');
+
+  if (!toggle || !toggleThumb) return;
+
+
+  // Check for manual theme preference first
+  const manualTheme = localStorage.getItem('theme-manual');
+  let currentTheme;
+  
+  if (manualTheme) {
+    // User has manually set theme
+    currentTheme = manualTheme;
+  } else {
+    // Use auto theme based on sunrise/sunset
+    currentTheme = localStorage.getItem('theme') || 'light';
+  }
+  
+  const isDark = currentTheme === 'dark';
+
+  if (isDark) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    toggle.setAttribute('aria-checked', 'true');
+  }
+
+  updateDarkModeIcon(isDark);
+
+  toggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    const isDark = newTheme === 'dark';
+
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    localStorage.setItem('theme-manual', newTheme); // Mark as manually set
+
+    toggle.setAttribute('aria-checked', isDark ? 'true' : 'false');
+    updateDarkModeIcon(isDark);
+  });
+}
+
+// Initialize dark mode toggle
+initDarkModeToggle();
+
+// Initialize sunrise/sunset based theme
+async function initSunriseSunsetTheme() {
+  const manualTheme = localStorage.getItem('theme-manual');
+  if (manualTheme) {
+    // User has manually set theme, don't override
+    return;
+  }
+  
+  const sunData = await getSunriseSunset();
+  if (sunData) {
+    setThemeBasedOnSun(sunData.sunrise, sunData.sunset);
+    scheduleThemeUpdate(sunData.sunrise, sunData.sunset);
+  }
+}
+
+// Initialize sunrise/sunset theme on page load
+initSunriseSunsetTheme();
 
 // Global variable to store all signatories for sorting and filtering
 let allSignatories = [];
