@@ -1,27 +1,67 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { saveSignatoryToDb, loadSignatoriesFromDb, checkSignatoryExists } from './db.js';
+import { saveSignatoryToDb, loadSignatoriesFromDb, checkSignatoryExists, loadSupportersFromDb, savePendingSupporterToDb } from './db.js';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
 
-// Global variable to store reCAPTCHA status
-let recaptchaComplete = false;
+// --- Toast Notifications ---
 
-// reCAPTCHA callback function (must be global for the callback to work)
-window.onCaptchaComplete = (token) => {
-  console.log('reCAPTCHA validated with token:', token);
-  recaptchaComplete = true;
-  
-  // Trigger form submission if it was initiated
-  if (window.pendingFormSubmission) {
-    window.pendingFormSubmission();
-    window.pendingFormSubmission = null;
-  }
+const TOAST_SVG = {
+  success: '<svg class="toast-icon success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+  error: '<svg class="toast-icon error" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+  warning: '<svg class="toast-icon warning" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+  info: '<svg class="toast-icon info" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
 };
+
+function showToast(message, type = 'info', duration = 4500) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = `toast-item ${type}`;
+  toast.style.setProperty('--toast-duration', `${duration / 1000}s`);
+  toast.innerHTML = `
+    ${TOAST_SVG[type] || TOAST_SVG.info}
+    <p>${message}</p>
+    <button class="toast-close" onclick="this.closest('.toast-item').remove()">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+  `;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('exit');
+    toast.addEventListener('animationend', () => toast.remove());
+  }, duration);
+}
+
+// --- Translation helper for toast messages ---
+
+let _toastTranslations = {};
+
+async function loadToastTranslations() {
+  const lang = document.documentElement.getAttribute('lang') || 'de';
+  try {
+    const resp = await fetch(`./content/translations/${lang}.json`);
+    _toastTranslations = await resp.json();
+  } catch (e) {
+    _toastTranslations = {};
+  }
+}
+
+function t(key, fallback) {
+  return _toastTranslations[key] || fallback || key;
+}
+
+document.addEventListener('languageChanged', () => loadToastTranslations());
+
+// reCAPTCHA state is managed on window (set by inline script in index.html before reCAPTCHA loads)
 
 // Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', () => {
+  loadToastTranslations();
+
   // Initialize custom cursor
   initCustomCursor();
   
@@ -80,6 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Make hero buttons equal width
   initEqualWidthButtons();
+  
+  // Initialize supporter form
+  initSupporterForm();
+  
+  // Load supporters dynamically
+  loadSupporters();
 });
 
 // Custom cursor
@@ -417,14 +463,14 @@ function initForm() {
     
     if (submissionTime - pageLoadTime < TIME_THRESHOLD) {
       console.log('Spam detected: Form submitted too quickly');
-      alert('Bitte warten Sie einen Moment, bevor Sie das Formular absenden.');
+      showToast(t('toast_spam_wait'), 'warning');
       return false;
     }
     
     // Spam protection: Check submission count
     if (submissionCount >= MAX_SUBMISSIONS_PER_SESSION) {
       console.log('Spam detected: Too many submissions in this session');
-      alert('Sie haben bereits den Code of Conduct unterzeichnet. Vielen Dank für Ihre Unterstützung!');
+      showToast(t('toast_already_signed'), 'info');
       return false;
     }
     
@@ -453,20 +499,22 @@ function initForm() {
     submitButton.disabled = true;
     submitButton.textContent = 'Speichern...';
     
-    // Execute reCAPTCHA validation if not already completed
-    if (!recaptchaComplete) {
-      // Store pending submission so it can be triggered after reCAPTCHA completes
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+    if (isLocalhost || window._recaptchaComplete) {
+      processFormSubmission(form, name, location, submitButton, originalText, signatoriesList);
+      window._recaptchaComplete = false;
+    } else {
       window.pendingFormSubmission = () => {
         processFormSubmission(form, name, location, submitButton, originalText, signatoriesList);
       };
       
-      // Trigger reCAPTCHA
       try {
         if (typeof grecaptcha !== 'undefined') {
           grecaptcha.execute();
         } else {
           console.error('reCAPTCHA not loaded');
-          alert('Bitte laden Sie die Seite neu und versuchen Sie es erneut.');
+          showToast(t('toast_reload_page'), 'error');
           submitButton.disabled = false;
           submitButton.textContent = originalText;
         }
@@ -475,16 +523,7 @@ function initForm() {
         submitButton.disabled = false;
         submitButton.textContent = originalText;
       }
-    } else {
-      // reCAPTCHA was previously validated, proceed with submission
-      processFormSubmission(form, name, location, submitButton, originalText, signatoriesList);
-      recaptchaComplete = false; // Reset for next submission
     }
-    
-    /* Auskommentierter Code für lokale Entwicklung (ohne reCAPTCHA)
-    // Überspringe reCAPTCHA und verarbeite das Formular direkt
-    processFormSubmission(form, name, location, submitButton, originalText, signatoriesList);
-    */
   });
 }
 
@@ -516,7 +555,7 @@ async function processFormSubmission(form, name, location, submitButton, origina
     
     if (exists) {
       console.log(`Signature already exists for ${name} from ${location}`);
-      alert('Diese Kombination aus Name und Ort existiert bereits. Bitte versuchen Sie es mit einem anderen Namen oder Ort.');
+      showToast(t('toast_duplicate_entry'), 'warning');
       submitButton.disabled = false;
       submitButton.textContent = originalText;
       return;
@@ -585,9 +624,11 @@ async function processFormSubmission(form, name, location, submitButton, origina
     submitButton.disabled = false;
     submitButton.textContent = originalText;
     
+    showToast(t('toast_sign_success'), 'success', 5000);
+    
   } catch (error) {
     console.error('Error saving signature:', error);
-    alert('Es gab ein Problem beim Speichern der Unterschrift. Bitte versuchen Sie es später erneut.');
+    showToast(t('toast_sign_error'), 'error');
     
     // Reset button state
     submitButton.disabled = false;
@@ -1771,18 +1812,62 @@ window.closeWakethievingModal = function() {
   document.body.classList.remove('no-scroll');
 };
 
+// Supporter Modal Functions
+window.openSupporterModal = function() {
+  const modal = document.getElementById('supporter-modal');
+  
+  if (!modal) return;
+  
+  modal.classList.add('active');
+  document.body.classList.add('no-scroll');
+  
+  // Reset form when opening
+  const form = document.getElementById('supporter-form');
+  if (form) {
+    form.reset();
+    const preview = document.getElementById('logo-preview');
+    if (preview) {
+      preview.innerHTML = '';
+    }
+  }
+};
+
+window.closeSupporterModal = function() {
+  const modal = document.getElementById('supporter-modal');
+  
+  if (!modal) return;
+  
+  modal.classList.remove('active');
+  document.body.classList.remove('no-scroll');
+};
+
 // Close modal when clicking outside of it
 document.addEventListener('click', function(event) {
-  const modal = document.getElementById('wakethieving-modal');
-  if (modal && event.target === modal) {
+  const wakethievingModal = document.getElementById('wakethieving-modal');
+  const supporterModal = document.getElementById('supporter-modal');
+  
+  if (wakethievingModal && event.target === wakethievingModal) {
     closeWakethievingModal();
+  }
+  
+  if (supporterModal && event.target === supporterModal) {
+    closeSupporterModal();
   }
 });
 
 // Close modal with Escape key
 document.addEventListener('keydown', function(event) {
   if (event.key === 'Escape') {
-    closeWakethievingModal();
+    const wakethievingModal = document.getElementById('wakethieving-modal');
+    const supporterModal = document.getElementById('supporter-modal');
+    
+    if (wakethievingModal && wakethievingModal.classList.contains('active')) {
+      closeWakethievingModal();
+    }
+    
+    if (supporterModal && supporterModal.classList.contains('active')) {
+      closeSupporterModal();
+    }
   }
 });
 
@@ -1925,6 +2010,208 @@ function initDarkModeToggle() {
     toggle.setAttribute('aria-checked', isDark ? 'true' : 'false');
     updateDarkModeIcon(isDark);
   });
+}
+
+// Initialize supporter form
+function initSupporterForm() {
+  const form = document.getElementById('supporter-form');
+  const logoInput = document.getElementById('supporter-logo');
+  const logoPreview = document.getElementById('logo-preview');
+  
+  if (!form || !logoInput || !logoPreview) return;
+  
+  // Logo preview functionality
+  logoInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      // Check file type
+      const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml'];
+      if (!validTypes.includes(file.type)) {
+        showToast(t('toast_invalid_image'), 'warning');
+        logoInput.value = '';
+        logoPreview.innerHTML = '';
+        return;
+      }
+      
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        showToast(t('toast_file_too_large'), 'warning');
+        logoInput.value = '';
+        logoPreview.innerHTML = '';
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        logoPreview.innerHTML = `
+          <img src="${e.target.result}" alt="Logo Preview" style="max-width: 200px; max-height: 200px; margin-top: 1rem; border: 1px solid rgba(145, 190, 212, 0.3); padding: 1rem; background: white;">
+        `;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      logoPreview.innerHTML = '';
+    }
+  });
+  
+  // Form submission
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(form);
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    
+    // Validate form
+    const name = formData.get('name');
+    const link = formData.get('link');
+    const logo = formData.get('logo');
+    const email = formData.get('email');
+    
+    if (!name || !link || !logo || !email) {
+      showToast(t('toast_fill_required'), 'warning');
+      return;
+    }
+    
+    // Validate URL
+    try {
+      new URL(link);
+    } catch (error) {
+      showToast(t('toast_invalid_url'), 'warning');
+      return;
+    }
+    
+    // Disable submit button
+    submitButton.disabled = true;
+    submitButton.textContent = 'Wird gesendet...';
+    
+    try {
+      const logoFile = formData.get('logo');
+      const message = formData.get('message') || '';
+
+      await savePendingSupporterToDb(name, link, email, message, logoFile);
+
+      // Notify admin about new supporter request via EmailJS
+      try {
+        if (window.emailjs) {
+          window.emailjs.init({ publicKey: 'B66GW10zQgaxWqkUV' });
+          const result = await window.emailjs.send('service_dwpmhpx', 'template_saoqx7a', {
+            to_email: 'patrick@federi.com',
+            to_name: 'Patrick',
+            from_name: name,
+            from_email: email,
+            supporter_name: name,
+            supporter_link: link,
+            supporter_message: message || '–',
+            website_url: 'https://codeofconduct.ch/admin.html'
+          });
+          console.log('Admin notification sent:', result);
+        }
+      } catch (emailErr) {
+        console.warn('Admin notification email failed:', emailErr);
+      }
+
+      showToast(t('toast_supporter_success'), 'success', 6000);
+
+      form.reset();
+      logoPreview.innerHTML = '';
+      closeSupporterModal();
+
+    } catch (error) {
+      console.error('Error submitting supporter request:', error);
+      showToast(t('toast_supporter_error') + ' ' + error.message, 'error');
+    } finally {
+      // Re-enable submit button
+      submitButton.disabled = false;
+      submitButton.textContent = originalText;
+    }
+  });
+}
+
+// Load supporters from Firestore and render them
+async function loadSupporters() {
+  try {
+    const supporters = await loadSupportersFromDb();
+    const supportersGrid = document.querySelector('.supporters-grid');
+    
+    if (!supportersGrid) return;
+    
+    // Only replace static supporters if we have data from Firestore
+    if (supporters && supporters.length > 0) {
+      const becomeSupporterCard = supportersGrid.querySelector('.become-supporter-card');
+      const section = supportersGrid.closest('section');
+
+      // Check if the section's ScrollTrigger already fired
+      const sectionAlreadyRevealed = becomeSupporterCard &&
+        getComputedStyle(becomeSupporterCard).transform !== 'none'
+        ? false : true;
+
+      // Build all new items in a fragment first (off-DOM) to avoid layout shift
+      const fragment = document.createDocumentFragment();
+      supporters.forEach((supporter) => {
+        const supporterItem = document.createElement('div');
+        supporterItem.className = 'supporter-logo reveal-item';
+        supporterItem.innerHTML = `
+          <a href="${supporter.link}" target="_blank" rel="noopener noreferrer">
+            <img src="${supporter.logoPath}" alt="${supporter.name}" onerror="this.onerror=null; this.src='./src/images/logos/pfc-logo.png'">
+          </a>
+        `;
+        fragment.appendChild(supporterItem);
+      });
+
+      // Lock the grid height to prevent layout shift during swap
+      supportersGrid.style.minHeight = supportersGrid.offsetHeight + 'px';
+
+      // Remove static items and insert Firestore items in one go
+      const staticSupporters = supportersGrid.querySelectorAll('.supporter-logo[data-static="true"]');
+      staticSupporters.forEach(item => item.remove());
+
+      if (becomeSupporterCard) {
+        supportersGrid.insertBefore(fragment, becomeSupporterCard);
+      } else {
+        supportersGrid.appendChild(fragment);
+      }
+
+      // Match the new items' state to the become-supporter-card's current state
+      const newRevealItems = supportersGrid.querySelectorAll('.reveal-item:not(.become-supporter-card)');
+      const cardTransform = becomeSupporterCard ? gsap.getProperty(becomeSupporterCard, 'y') : 0;
+      const cardOpacity = becomeSupporterCard ? gsap.getProperty(becomeSupporterCard, 'opacity') : 1;
+
+      if (newRevealItems.length > 0) {
+        // Set new items to the same GSAP state as the become-supporter-card
+        gsap.set(newRevealItems, { y: cardTransform, opacity: cardOpacity });
+      }
+
+      // Release the locked height after the new items are in the DOM
+      requestAnimationFrame(() => {
+        supportersGrid.style.minHeight = '';
+      });
+
+      // If the section hasn't been revealed yet, set up a new ScrollTrigger for the new items
+      if (!sectionAlreadyRevealed && section) {
+        ScrollTrigger.create({
+          trigger: section,
+          start: 'top 75%',
+          onEnter: () => {
+            gsap.to(newRevealItems, {
+              opacity: 1,
+              y: 0,
+              stagger: 0.15,
+              duration: 0.6,
+              ease: 'power3.out'
+            });
+          },
+          once: true
+        });
+      }
+    } else {
+      // No supporters in Firestore, keep static ones
+      console.log('No supporters in Firestore, using static supporters');
+    }
+    
+  } catch (error) {
+    console.error('Error loading supporters:', error);
+    // If loading fails, keep the static HTML supporters
+  }
 }
 
 // Initialize dark mode toggle

@@ -1059,6 +1059,53 @@ a {
       object-fit: contain;
     }
   }
+  
+  // Become Supporter Card
+  .become-supporter-card {
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.6rem;
+    
+    .plus-icon {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $accent-color;
+      transition: transform 0.3s ease, color 0.3s ease;
+      
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    
+    .become-supporter-text {
+      font-size: 1.4rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: $primary-color;
+      margin: 0;
+      text-align: center;
+      
+      [data-theme="dark"] & {
+        color: #91BED4;
+      }
+    }
+    
+    &:hover {
+      transform: translateY(-5px);
+      
+      .plus-icon {
+        transform: scale(1.1);
+        color: $secondary-color;
+      }
+    }
+  }
 }
 
 // Signatories Section
@@ -1459,6 +1506,120 @@ a {
     .g-recaptcha {
       margin-bottom: 1.6rem;
       opacity: 0.01; // Fast unsichtbar, aber die API benötigt das Element
+    }
+  }
+}
+
+// Supporter Form Styles (in Modal)
+.supporter-form {
+  .form-group {
+    margin-bottom: 2.4rem;
+    
+    label {
+      display: block;
+      margin-bottom: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 1.4rem;
+      color: var(--text-color);
+    }
+    
+    input[type="text"],
+    input[type="url"],
+    input[type="email"],
+    input[type="file"],
+    textarea {
+      width: 100%;
+      padding: 1.2rem;
+      border: 1px solid var(--border-color);
+      border-radius: 0;
+      font-size: 1.6rem;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: inherit;
+      
+      &:focus {
+        outline: none;
+        border-color: $accent-color;
+        box-shadow: 0 0 0 2px rgba(242, 97, 1, 0.2);
+      }
+    }
+    
+    input[type="file"] {
+      padding: 1rem;
+      cursor: pointer;
+      
+      &::file-selector-button {
+        padding: 0.8rem 1.6rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0;
+        background-color: var(--light-bg);
+        color: var(--text-color);
+        font-weight: 600;
+        cursor: pointer;
+        margin-right: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background-color: $accent-color;
+          color: white;
+          border-color: $accent-color;
+        }
+      }
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+    
+    .form-hint {
+      display: block;
+      margin-top: 0.8rem;
+      font-size: 1.2rem;
+      color: rgba(var(--text-color-rgb), 0.7);
+      line-height: 1.5;
+      
+      &.form-hint-important {
+        color: $accent-color;
+        font-weight: 600;
+        padding: 1rem;
+        background-color: rgba(242, 97, 1, 0.1);
+        border-left: 3px solid $accent-color;
+        margin-top: 1rem;
+      }
+    }
+    
+    .logo-preview {
+      margin-top: 1rem;
+      
+      img {
+        display: block;
+        max-width: 200px;
+        max-height: 200px;
+        border: 1px solid rgba(145, 190, 212, 0.3);
+        padding: 1rem;
+        background: white;
+        
+        [data-theme="dark"] & {
+          background: var(--light-bg);
+          border-color: rgba(145, 190, 212, 0.2);
+        }
+      }
+    }
+  }
+  
+  button[type="submit"] {
+    width: 100%;
+    margin-top: 1.6rem;
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
   }
 }

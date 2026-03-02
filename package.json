@@ -8,7 +8,8 @@
     "build": "vite build && cp -r content dist/",
     "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy-ftp": "npm run build && node deploy.js"
+    "deploy-ftp": "npm run build && node deploy.js",
+    "upload-supporters": "node scripts/upload-supporters.js"
   },
   "keywords": [
     "pumpfoiling",

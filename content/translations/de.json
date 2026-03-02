@@ -35,6 +35,18 @@
   "wakethieving_button": "Zu den Wakethieving Rules",
   
   "supporters_title": "Unterstützende Organisationen",
+  "become_supporter_text": "Auch Unterstützer werden",
+  "become_supporter_button": "Unterstützer werden",
+  "supporter_modal_title": "Unterstützer werden",
+  "supporter_form_name": "Name der Organisation",
+  "supporter_form_link": "Website-Link",
+  "supporter_form_link_hint": "Bitte gib die vollständige URL ein (z.B. https://www.example.com)",
+  "supporter_form_logo": "Logo hochladen",
+  "supporter_form_logo_hint": "⚠️ Wichtig: Bitte verwende ein Logo mit transparentem Hintergrund (PNG mit Alpha-Kanal oder SVG)",
+  "supporter_form_email": "Deine E-Mail-Adresse",
+  "supporter_form_email_hint": "Wir benötigen deine E-Mail-Adresse, um dich über den Status deiner Anfrage zu informieren",
+  "supporter_form_message": "Nachricht (optional)",
+  "supporter_form_submit": "Anfrage senden",
   
   "signatories_title": "Unterzeichner:innen",
   "signature_counter_text": "Unterzeichner:innen",
@@ -56,5 +68,18 @@
   "footer_initiative": "Eine Initiative der",
   "footer_copyright": "Diese Arbeit ist lizenziert unter CC BY-NC-SA 4.0",
   "footer_opensource": "Open-Source-Projekt auf",
-  "footer_languages": "Sprachen"
+  "footer_languages": "Sprachen",
+
+  "toast_spam_wait": "Bitte warte einen Moment, bevor du das Formular absendest.",
+  "toast_already_signed": "Du hast den Code of Conduct bereits unterzeichnet. Vielen Dank für deine Unterstützung!",
+  "toast_reload_page": "Bitte lade die Seite neu und versuche es erneut.",
+  "toast_duplicate_entry": "Diese Kombination aus Name und Ort existiert bereits. Bitte versuche es mit einem anderen Namen oder Ort.",
+  "toast_sign_success": "Vielen Dank! Deine Unterschrift wurde erfolgreich gespeichert.",
+  "toast_sign_error": "Es gab ein Problem beim Speichern. Bitte versuche es später erneut.",
+  "toast_invalid_image": "Bitte wähle ein Bild im Format PNG, JPG oder SVG aus.",
+  "toast_file_too_large": "Die Datei ist zu gross. Bitte wähle eine Datei unter 5 MB.",
+  "toast_fill_required": "Bitte fülle alle Pflichtfelder aus.",
+  "toast_invalid_url": "Bitte gib eine gültige URL ein (z.\u00a0B. https://www.example.com).",
+  "toast_supporter_success": "Vielen Dank für deine Anfrage! Sie wird geprüft und freigeschaltet.",
+  "toast_supporter_error": "Fehler beim Senden. Bitte versuche es erneut."
 } 

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Pumpfoilers Code of Conduct</title>
+  <link rel="icon" href="./src/images/logos/pfc-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;900&display=swap" rel="stylesheet">
+  
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  
+  <!-- Radix UI Primitives -->
+  <script src="https://unpkg.com/@radix-ui/react-dialog@latest/dist/index.umd.js"></script>
+  <script src="https://unpkg.com/@radix-ui/react-dropdown-menu@latest/dist/index.umd.js"></script>
+  <script src="https://unpkg.com/@radix-ui/react-label@latest/dist/index.umd.js"></script>
+  <script src="https://unpkg.com/@radix-ui/react-slot@latest/dist/index.umd.js"></script>
+  
+  <!-- Tailwind CSS for shadcn/ui base styles -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- shadcn/ui styles -->
+  <link rel="stylesheet" href="./src/scss/admin.scss">
+  
+  <style>
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 222.2 84% 4.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 222.2 84% 4.9%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 222.2 84% 4.9%;
+      --primary: 222.2 47.4% 11.2%;
+      --primary-foreground: 210 40% 98%;
+      --secondary: 210 40% 96.1%;
+      --secondary-foreground: 222.2 47.4% 11.2%;
+      --muted: 210 40% 96.1%;
+      --muted-foreground: 215.4 16.3% 46.9%;
+      --accent: 210 40% 96.1%;
+      --accent-foreground: 222.2 47.4% 11.2%;
+      --destructive: 0 84.2% 60.2%;
+      --destructive-foreground: 210 40% 98%;
+      --border: 214.3 31.8% 91.4%;
+      --input: 214.3 31.8% 91.4%;
+      --ring: 222.2 84% 4.9%;
+      --radius: 0.5rem;
+    }
+    
+    [data-theme="dark"] {
+      --background: 222.2 84% 4.9%;
+      --foreground: 210 40% 98%;
+      --card: 222.2 84% 4.9%;
+      --card-foreground: 210 40% 98%;
+      --popover: 222.2 84% 4.9%;
+      --popover-foreground: 210 40% 98%;
+      --primary: 210 40% 98%;
+      --primary-foreground: 222.2 47.4% 11.2%;
+      --secondary: 217.2 32.6% 17.5%;
+      --secondary-foreground: 210 40% 98%;
+      --muted: 217.2 32.6% 17.5%;
+      --muted-foreground: 215 20.2% 65.1%;
+      --accent: 217.2 32.6% 17.5%;
+      --accent-foreground: 210 40% 98%;
+      --destructive: 0 62.8% 30.6%;
+      --destructive-foreground: 210 40% 98%;
+      --border: 217.2 32.6% 17.5%;
+      --input: 217.2 32.6% 17.5%;
+      --ring: 212.7 26.8% 83.9%;
+    }
+    
+    * {
+      border-color: hsl(var(--border));
+    }
+    
+    body {
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Dialog -->
+  <div id="login-dialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display: none;">
+    <div class="bg-white dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-semibold">Admin Login</h2>
+        <button onclick="closeLoginModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <form id="login-form" onsubmit="event.preventDefault(); handleLogin();">
+        <div class="space-y-4">
+          <div>
+            <label for="login-username" class="block text-sm font-medium mb-2">Username</label>
+            <input type="text" id="login-username" name="username" required autocomplete="username" 
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   placeholder="admin">
+          </div>
+          
+          <div>
+            <label for="login-password" class="block text-sm font-medium mb-2">Passwort</label>
+            <input type="password" id="login-password" name="password" required autocomplete="current-password"
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   placeholder="••••••••">
+          </div>
+        </div>
+        
+        <button type="submit" class="w-full mt-6 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors">
+          Anmelden
+        </button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Admin Panel -->
+  <div id="admin-panel" style="display: none;">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <!-- Header -->
+      <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+              <h1 class="text-xl font-bold text-gray-900 dark:text-gray-100">Admin Dashboard</h1>
+            </div>
+            
+            <div class="flex items-center gap-4">
+              <button onclick="openPasswordModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                Zugangsdaten ändern
+              </button>
+              
+              <button onclick="logout()" class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors">
+                Abmelden
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Main Content -->
+      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Tab Navigation -->
+        <div class="border-b border-gray-200 dark:border-gray-700 mb-8">
+          <nav class="flex gap-0 -mb-px" role="tablist">
+            <button id="tab-supporters" role="tab" aria-selected="true" onclick="switchTab('supporters')"
+                    class="admin-tab active px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap">
+              <svg class="w-4 h-4 inline-block mr-1.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              Unterstützer
+            </button>
+            <button id="tab-signatories" role="tab" aria-selected="false" onclick="switchTab('signatories')"
+                    class="admin-tab px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap">
+              <svg class="w-4 h-4 inline-block mr-1.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              Unterzeichner
+              <span id="signatory-count-badge" class="ml-1.5 px-2 py-0.5 text-xs font-semibold bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-full">0</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- === TAB: Supporters === -->
+        <div id="panel-supporters" class="tab-panel">
+          <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Unterstützer verwalten</h2>
+            <p class="text-gray-600 dark:text-gray-400">Verwalte die Unterstützer-Logos und Informationen</p>
+          </div>
+          
+          <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <button onclick="openAddModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Neuer Unterstützer
+            </button>
+            
+            <input type="text" id="search-supporters" placeholder="Unterstützer suchen..." 
+                   class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent max-w-xs w-full">
+          </div>
+          
+          <!-- Pending Supporters -->
+          <div id="pending-section" class="mb-10" style="display: none;">
+            <div class="flex items-center gap-3 mb-4">
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Neue Anfragen</h3>
+              <span id="pending-count" class="px-2.5 py-0.5 text-sm font-semibold bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300 rounded-full">0</span>
+            </div>
+            <div id="pending-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+          </div>
+
+          <!-- Active Supporters -->
+          <div id="supporters-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="text-center py-8 text-gray-500">Lade Unterstützer...</div>
+          </div>
+        </div>
+
+        <!-- === TAB: Signatories === -->
+        <div id="panel-signatories" class="tab-panel" style="display: none;">
+          <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Unterzeichner verwalten</h2>
+            <p class="text-gray-600 dark:text-gray-400">Alle Personen, die den Code of Conduct unterzeichnet haben</p>
+          </div>
+
+          <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+            <button onclick="openSignatoryModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Neuer Unterzeichner
+            </button>
+            
+            <input type="text" id="search-signatories" placeholder="Unterzeichner suchen..."
+                   class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent max-w-xs w-full">
+          </div>
+
+          <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left">
+                <thead class="bg-gray-50 dark:bg-gray-700/50 text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                  <tr>
+                    <th class="px-4 py-3 font-semibold">#</th>
+                    <th class="px-4 py-3 font-semibold cursor-pointer hover:text-gray-700 dark:hover:text-gray-200" onclick="sortSignatories('name')">
+                      Name
+                      <svg class="w-3 h-3 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+                    </th>
+                    <th class="px-4 py-3 font-semibold cursor-pointer hover:text-gray-700 dark:hover:text-gray-200" onclick="sortSignatories('location')">
+                      Ort
+                      <svg class="w-3 h-3 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+                    </th>
+                    <th class="px-4 py-3 font-semibold cursor-pointer hover:text-gray-700 dark:hover:text-gray-200" onclick="sortSignatories('date')">
+                      Datum
+                      <svg class="w-3 h-3 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+                    </th>
+                    <th class="px-4 py-3 font-semibold text-right">Aktionen</th>
+                  </tr>
+                </thead>
+                <tbody id="signatories-table-body" class="divide-y divide-gray-200 dark:divide-gray-700">
+                  <tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">Lade Unterzeichner...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="signatories-pagination" class="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700">
+              <span id="signatories-info" class="text-sm text-gray-500 dark:text-gray-400"></span>
+              <div class="flex gap-1" id="signatories-pages"></div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Password Change Dialog -->
+  <div id="password-dialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display: none;">
+    <div class="bg-white dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-semibold">Zugangsdaten ändern</h2>
+        <button onclick="closePasswordModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <form id="password-form">
+        <div class="space-y-4">
+          <div>
+            <label for="current-password" class="block text-sm font-medium mb-2">Aktuelles Passwort *</label>
+            <input type="password" id="current-password" name="currentPassword" required
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          </div>
+
+          <hr class="border-gray-200 dark:border-gray-700">
+
+          <div>
+            <label for="new-username" class="block text-sm font-medium mb-2">Neuer Username</label>
+            <input type="text" id="new-username" name="newUsername" 
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   placeholder="Leer lassen, um nicht zu ändern">
+          </div>
+          
+          <div>
+            <label for="new-password" class="block text-sm font-medium mb-2">Neues Passwort</label>
+            <input type="password" id="new-password" name="newPassword" minlength="6"
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   placeholder="Leer lassen, um nicht zu ändern">
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Mindestens 6 Zeichen</p>
+          </div>
+          
+          <div>
+            <label for="confirm-password" class="block text-sm font-medium mb-2">Passwort bestätigen</label>
+            <input type="password" id="confirm-password" name="confirmPassword"
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   placeholder="Nur nötig bei Passwort-Änderung">
+          </div>
+        </div>
+        
+        <div class="flex gap-3 mt-6">
+          <button type="button" onclick="closePasswordModal()" class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            Abbrechen
+          </button>
+          <button type="submit" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">
+            Speichern
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Add/Edit Signatory Dialog -->
+  <div id="signatory-dialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display: none;">
+    <div class="bg-white dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h2 id="signatory-modal-title" class="text-2xl font-semibold">Neuer Unterzeichner</h2>
+        <button onclick="closeSignatoryModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <form id="signatory-form">
+        <input type="hidden" id="signatory-id" name="id">
+        
+        <div class="space-y-4">
+          <div>
+            <label for="signatory-name" class="block text-sm font-medium mb-2">Name *</label>
+            <input type="text" id="signatory-name" name="name" required 
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   placeholder="Vor- und Nachname">
+          </div>
+          
+          <div>
+            <label for="signatory-location" class="block text-sm font-medium mb-2">Ort *</label>
+            <input type="text" id="signatory-location" name="location" required
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   placeholder="z.B. Zürich, Schweiz">
+          </div>
+        </div>
+        
+        <div class="flex gap-3 mt-6">
+          <button type="button" onclick="closeSignatoryModal()" class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            Abbrechen
+          </button>
+          <button type="submit" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">
+            Speichern
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add/Edit Supporter Dialog -->
+  <div id="supporter-dialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display: none;">
+    <div class="bg-white dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-6">
+        <h2 id="modal-title" class="text-2xl font-semibold">Neuer Unterstützer</h2>
+        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <form id="supporter-form">
+        <input type="hidden" id="supporter-id" name="id">
+        
+        <div class="space-y-4">
+          <div>
+            <label for="supporter-name" class="block text-sm font-medium mb-2">Name der Organisation *</label>
+            <input type="text" id="supporter-name" name="name" required 
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   placeholder="z.B. Indiana Paddlesurf">
+          </div>
+          
+          <div>
+            <label for="supporter-link" class="block text-sm font-medium mb-2">Website-Link *</label>
+            <input type="url" id="supporter-link" name="link" required
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                   placeholder="https://www.example.com oder www.example.com">
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">https:// wird automatisch hinzugefügt, falls nicht vorhanden</p>
+          </div>
+          
+          <div>
+            <label for="supporter-logo" class="block text-sm font-medium mb-2">Logo *</label>
+            <input type="file" id="supporter-logo" name="logo" accept="image/png,image/jpeg,image/jpg,image/svg+xml"
+                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-300">
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">PNG, JPG oder SVG mit transparentem Hintergrund (max. 5MB)</p>
+            <div id="logo-preview" class="mt-4"></div>
+          </div>
+        </div>
+        
+        <div class="flex gap-3 mt-6">
+          <button type="button" onclick="closeModal()" class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            Abbrechen
+          </button>
+          <button type="submit" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">
+            Speichern
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed top-4 right-4 z-[100] flex flex-col gap-3 pointer-events-none" style="max-width: 420px;"></div>
+
+  <!-- Confirm Dialog -->
+  <div id="confirm-dialog" class="fixed inset-0 z-[90] flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display: none;">
+    <div class="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-sm p-6 mx-4 animate-in">
+      <div class="flex items-center gap-3 mb-4">
+        <div id="confirm-icon" class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"></div>
+        <h3 id="confirm-title" class="text-lg font-semibold text-gray-900 dark:text-gray-100"></h3>
+      </div>
+      <p id="confirm-message" class="text-sm text-gray-600 dark:text-gray-400 mb-6"></p>
+      <div class="flex gap-3">
+        <button id="confirm-cancel" class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+          Abbrechen
+        </button>
+        <button id="confirm-ok" class="flex-1 px-4 py-2.5 text-sm font-medium text-white rounded-md transition-colors">
+          Bestätigen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes toast-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes toast-out { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+    .toast-enter { animation: toast-in 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .toast-exit { animation: toast-out 0.2s ease-in forwards; }
+    @keyframes dialog-in { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .animate-in { animation: dialog-in 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+
+    .admin-tab { color: hsl(var(--muted-foreground)); border-color: transparent; }
+    .admin-tab:hover { color: hsl(var(--foreground)); border-color: hsl(var(--border)); }
+    .admin-tab.active { color: hsl(var(--foreground)); border-color: hsl(214 100% 50%); }
+
+    #signatories-table-body tr { transition: background-color 0.1s; }
+    #signatories-table-body tr:hover { background-color: hsl(var(--muted)); }
+  </style>
+
+  <script type="module" src="./src/js/admin.js"></script>
+</body>
+</html>

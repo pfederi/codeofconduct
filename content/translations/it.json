@@ -35,6 +35,18 @@
   "wakethieving_button": "Vedi le Regole di Wakethieving",
   
   "supporters_title": "Organizzazioni di Supporto",
+  "become_supporter_text": "Diventa un Sostenitore",
+  "become_supporter_button": "Diventa un Sostenitore",
+  "supporter_modal_title": "Diventa un Sostenitore",
+  "supporter_form_name": "Nome dell'Organizzazione",
+  "supporter_form_link": "Link del Sito Web",
+  "supporter_form_link_hint": "Inserisci l'URL completo (es. https://www.example.com)",
+  "supporter_form_logo": "Carica Logo",
+  "supporter_form_logo_hint": "⚠️ Importante: Usa un logo con sfondo trasparente (PNG con canale alpha o SVG)",
+  "supporter_form_email": "Il Tuo Indirizzo Email",
+  "supporter_form_email_hint": "Abbiamo bisogno del tuo indirizzo email per informarti sullo stato della tua richiesta",
+  "supporter_form_message": "Messaggio (opzionale)",
+  "supporter_form_submit": "Invia Richiesta",
   
   "signatories_title": "Firmatari",
   "signature_counter_text": "Firme",
@@ -56,5 +68,18 @@
   "footer_initiative": "Un'iniziativa di",
   "footer_copyright": "Quest'opera è sotto licenza CC BY-NC-SA 4.0",
   "footer_opensource": "Progetto open source su",
-  "footer_languages": "Lingue"
+  "footer_languages": "Lingue",
+
+  "toast_spam_wait": "Attendi un momento prima di inviare il modulo.",
+  "toast_already_signed": "Hai già firmato il Codice di Condotta. Grazie per il tuo sostegno!",
+  "toast_reload_page": "Ricarica la pagina e riprova.",
+  "toast_duplicate_entry": "Questa combinazione di nome e luogo esiste già. Prova con un altro nome o luogo.",
+  "toast_sign_success": "Grazie! La tua firma è stata salvata con successo.",
+  "toast_sign_error": "Si è verificato un problema durante il salvataggio. Riprova più tardi.",
+  "toast_invalid_image": "Scegli un'immagine in formato PNG, JPG o SVG.",
+  "toast_file_too_large": "Il file è troppo grande. Scegli un file inferiore a 5 MB.",
+  "toast_fill_required": "Compila tutti i campi obbligatori.",
+  "toast_invalid_url": "Inserisci un URL valido (es. https://www.example.com).",
+  "toast_supporter_success": "Grazie per la tua richiesta! Verrà esaminata e approvata.",
+  "toast_supporter_error": "Errore durante l'invio. Riprova."
 } 

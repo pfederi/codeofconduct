@@ -35,6 +35,18 @@
   "wakethieving_button": "View Wakethieving Rules",
   
   "supporters_title": "Supporting Organizations",
+  "become_supporter_text": "Become a Supporter",
+  "become_supporter_button": "Become a Supporter",
+  "supporter_modal_title": "Become a Supporter",
+  "supporter_form_name": "Organization Name",
+  "supporter_form_link": "Website Link",
+  "supporter_form_link_hint": "Please enter the complete URL (e.g. https://www.example.com)",
+  "supporter_form_logo": "Upload Logo",
+  "supporter_form_logo_hint": "⚠️ Important: Please use a logo with transparent background (PNG with alpha channel or SVG)",
+  "supporter_form_email": "Your Email Address",
+  "supporter_form_email_hint": "We need your email address to inform you about the status of your request",
+  "supporter_form_message": "Message (optional)",
+  "supporter_form_submit": "Send Request",
   
   "signatories_title": "Signatories",
   "signature_counter_text": "Signatures",
@@ -56,5 +68,18 @@
   "footer_initiative": "An initiative by",
   "footer_copyright": "This work is licensed under CC BY-NC-SA 4.0",
   "footer_opensource": "Open source project on",
-  "footer_languages": "Languages"
+  "footer_languages": "Languages",
+
+  "toast_spam_wait": "Please wait a moment before submitting the form.",
+  "toast_already_signed": "You have already signed the Code of Conduct. Thank you for your support!",
+  "toast_reload_page": "Please reload the page and try again.",
+  "toast_duplicate_entry": "This combination of name and location already exists. Please try a different name or location.",
+  "toast_sign_success": "Thank you! Your signature has been saved successfully.",
+  "toast_sign_error": "There was a problem saving your signature. Please try again later.",
+  "toast_invalid_image": "Please choose an image in PNG, JPG, or SVG format.",
+  "toast_file_too_large": "The file is too large. Please choose a file under 5 MB.",
+  "toast_fill_required": "Please fill in all required fields.",
+  "toast_invalid_url": "Please enter a valid URL (e.g. https://www.example.com).",
+  "toast_supporter_success": "Thank you for your request! It will be reviewed and approved.",
+  "toast_supporter_error": "Error sending. Please try again."
 } 

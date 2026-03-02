@@ -1,0 +1,54 @@
+// Admin-specific styles using shadcn/ui design system
+// This file complements Tailwind CSS classes used in admin.html
+
+// Dialog backdrop animation
+.fixed.inset-0 {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Dialog content animation
+.bg-white.rounded-lg.shadow-lg {
+  animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Loading state
+.loading {
+  @apply text-center py-8 text-gray-500 dark:text-gray-400;
+}
+
+// Empty state
+.empty-state {
+  @apply text-center py-16;
+  
+  .empty-state-icon {
+    @apply text-6xl mb-4 opacity-50;
+  }
+  
+  h3 {
+    @apply text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-2;
+  }
+  
+  p {
+    @apply text-gray-600 dark:text-gray-400;
+  }
+}
