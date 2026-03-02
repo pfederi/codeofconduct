@@ -13,8 +13,10 @@ node_modules/
 # IDE files
 .idea/
 .vscode/
+.cursor/
 *.sublime-project
 *.sublime-workspace
+.cursor/
 
 # OS files
 .DS_Store
@@ -57,8 +59,19 @@ firebase.json
 firestore.indexes.json
 firestore.rules
 .firebase/
-firebase-config.js
-src/js/firebase-config.js
+**/firebase-config.js
 
 # FTP config
-.ftpconfig.json 
+.ftpconfig.json
+
+# Old build output (legacy)
+js/
+
+# Scripts with sensitive data
+scripts/
+
+# Legacy / unused assets
+icons/
+firebase-firestore-rules.txt
+firebase-storage-rules.txt
+src/images/supporters/smartfoil-logo.jpg 

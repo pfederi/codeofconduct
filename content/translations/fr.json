@@ -46,6 +46,9 @@
   "supporter_form_email": "Ton Adresse E-mail",
   "supporter_form_email_hint": "Nous avons besoin de ton adresse e-mail pour t'informer du statut de ta demande",
   "supporter_form_message": "Message (optionnel)",
+  "supporter_placeholder_name": "p. ex. Pumpfoil Club Zurich",
+  "supporter_placeholder_email": "ton@email.com",
+  "supporter_placeholder_message": "Informations supplémentaires...",
   "supporter_form_submit": "Envoyer la Demande",
   
   "signatories_title": "Signataires",
