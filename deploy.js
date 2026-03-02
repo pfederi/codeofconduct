@@ -14,7 +14,7 @@ async function deploy() {
       user: config.user,
       password: config.password,
       port: config.port,
-      secure: false
+      secure: true
     });
 
     console.log("✅ Connected to FTP server");

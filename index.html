@@ -6,17 +6,37 @@
   <meta name="description" content="Pumpfoilers Code of Conduct - Eine Initiative für sicheres und respektvolles Pumpfoilen in der Schweiz">
   <title>Pumpfoilers Code of Conduct - Switzerland</title>
 
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Pumpfoilers Code of Conduct - Switzerland">
+  <meta property="og:description" content="Eine Initiative für sicheres und respektvolles Pumpfoilen in der Schweiz">
+  <meta property="og:url" content="https://responsible.pumpfoiling.community">
+  <meta property="og:image" content="https://responsible.pumpfoiling.community/src/images/logos/pfc-logo.png">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Pumpfoilers Code of Conduct">
+  <meta name="twitter:description" content="Eine Initiative für sicheres und respektvolles Pumpfoilen in der Schweiz">
+  <meta name="twitter:image" content="https://responsible.pumpfoiling.community/src/images/logos/pfc-logo.png">
+
+  <!-- Alternate languages -->
+  <link rel="alternate" hreflang="de" href="https://responsible.pumpfoiling.community/?lang=de">
+  <link rel="alternate" hreflang="en" href="https://responsible.pumpfoiling.community/?lang=en">
+  <link rel="alternate" hreflang="fr" href="https://responsible.pumpfoiling.community/?lang=fr">
+  <link rel="alternate" hreflang="it" href="https://responsible.pumpfoiling.community/?lang=it">
+  <link rel="alternate" hreflang="x-default" href="https://responsible.pumpfoiling.community">
+
   <link rel="icon" href="./src/images/logos/pfc-logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./src/scss/style.scss">
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js" defer></script>
   <!-- reCAPTCHA callback must be defined before the API loads -->
   <script>
     window._recaptchaComplete = false;
     window.onCaptchaComplete = function(token) {
-      console.log('reCAPTCHA validated with token:', token);
+      
       window._recaptchaComplete = true;
       if (window.pendingFormSubmission) {
         window.pendingFormSubmission();
@@ -35,12 +55,12 @@
     <div class="container">
       <h1 class="site-title"><span>Pumpfoilers</span><span>Code of Conduct</span></h1>
       <div class="header-nav">
-        <button class="mobile-menu-toggle">
+        <button class="mobile-menu-toggle" aria-label="Menü öffnen" aria-expanded="false">
           <span class="bar"></span>
           <span class="bar"></span>
           <span class="bar"></span>
         </button>
-        <nav class="main-nav">
+        <nav class="main-nav" aria-label="Hauptnavigation">
           <ul>
             <li><a href="#intro" data-scroll data-i18n="nav_intro">Intro</a></li>
             <li><a href="#conduct" data-scroll data-i18n="nav_conduct">Code of Conduct</a></li>
@@ -50,8 +70,8 @@
         </nav>
         <div class="header-controls">
           <div class="language-switcher">
-            <button class="current-lang">DE</button>
-            <ul class="lang-dropdown">
+            <button class="current-lang" aria-label="Sprache wählen" aria-haspopup="listbox">DE</button>
+            <ul class="lang-dropdown" role="listbox" aria-label="Verfügbare Sprachen">
               <li data-lang="en">EN</li>
               <li data-lang="de">DE</li>
               <li data-lang="fr">FR</li>
@@ -417,8 +437,8 @@
               <label for="location" data-i18n="sign_form_location">Ort</label>
               <input type="text" id="location" name="location" required autocomplete="address-level2">
             </div>
-            <!-- Honeypot field for spam protection -->
-            <div class="form-group" style="display:none">
+            <div class="form-group" aria-hidden="true" style="position:absolute;left:-9999px;height:0;overflow:hidden">
+              <label for="website">Website</label>
               <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
             </div>
             <!-- Hidden timestamp field for spam protection -->
@@ -538,84 +558,7 @@
     </div>
   </div>
 
-  <!-- Toast Container -->
-  <div id="toast-container" style="position:fixed;top:1.5rem;right:1.5rem;z-index:10000;display:flex;flex-direction:column;gap:1rem;pointer-events:none;width:min(520px, calc(100vw - 3rem));"></div>
-  <style>
-    @keyframes toast-in { from { transform: translateY(-1rem) scale(0.96); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-    @keyframes toast-out { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
-    @keyframes toast-progress { from { width: 100%; } to { width: 0%; } }
-    #toast-container .toast-item {
-      pointer-events: auto !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 14px !important;
-      padding: 18px 20px !important;
-      background: #fff !important;
-      border-radius: 12px !important;
-      box-shadow: 0 10px 40px rgba(0,0,0,.15), 0 2px 10px rgba(0,0,0,.08) !important;
-      animation: toast-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative !important;
-      overflow: hidden !important;
-      box-sizing: border-box !important;
-    }
-    #toast-container .toast-item.exit { animation: toast-out 0.25s ease-in forwards; }
-    #toast-container .toast-item::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      height: 3px;
-      border-radius: 0 0 0.75rem 0.75rem;
-    }
-    #toast-container .toast-item.success { border-left: 5px solid #22c55e !important; }
-    #toast-container .toast-item.success::after { background: #22c55e; animation: toast-progress var(--toast-duration, 4.5s) linear forwards; }
-    #toast-container .toast-item.error { border-left: 5px solid #ef4444 !important; }
-    #toast-container .toast-item.error::after { background: #ef4444; animation: toast-progress var(--toast-duration, 4.5s) linear forwards; }
-    #toast-container .toast-item.warning { border-left: 5px solid #f97316 !important; }
-    #toast-container .toast-item.warning::after { background: #f97316; animation: toast-progress var(--toast-duration, 4.5s) linear forwards; }
-    #toast-container .toast-item.info { border-left: 5px solid #3b82f6 !important; }
-    #toast-container .toast-item.info::after { background: #3b82f6; animation: toast-progress var(--toast-duration, 4.5s) linear forwards; }
-    #toast-container .toast-item p {
-      font-size: 18px !important;
-      line-height: 1.4 !important;
-      color: #1f2937 !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      flex: 1 !important;
-      font-weight: 500 !important;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-      letter-spacing: -0.01em !important;
-      max-width: none !important;
-    }
-    #toast-container .toast-item .toast-close {
-      flex-shrink: 0 !important;
-      background: none !important;
-      border: none !important;
-      color: #9ca3af !important;
-      cursor: pointer !important;
-      padding: 6px !important;
-      margin: -6px -6px -6px 0 !important;
-      border-radius: 6px !important;
-      transition: all 0.15s !important;
-      line-height: 1 !important;
-    }
-    #toast-container .toast-item .toast-close:hover { color: #374151 !important; background: rgba(0,0,0,.05) !important; }
-    #toast-container .toast-item .toast-close svg {
-      width: 20px !important;
-      height: 20px !important;
-      display: block !important;
-    }
-    #toast-container .toast-item .toast-icon {
-      flex-shrink: 0 !important;
-      width: 28px !important;
-      height: 28px !important;
-      margin-top: 0 !important;
-    }
-    #toast-container .toast-item .toast-icon.success { color: #22c55e !important; }
-    #toast-container .toast-item .toast-icon.error { color: #ef4444 !important; }
-    #toast-container .toast-item .toast-icon.warning { color: #f97316 !important; }
-    #toast-container .toast-item .toast-icon.info { color: #3b82f6 !important; }
-  </style>
+  <div id="toast-container"></div>
 
   <script type="module" src="/src/js/main.js"></script>
 </body>

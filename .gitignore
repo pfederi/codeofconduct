@@ -60,6 +60,7 @@ firestore.indexes.json
 firestore.rules
 .firebase/
 **/firebase-config.js
+**/emailjs-config.js
 
 # FTP config
 .ftpconfig.json

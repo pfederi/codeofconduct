@@ -16,18 +16,12 @@ import {
   updateSignatoryInDb,
   deleteSignatoryFromDb
 } from './db.js';
-
-// EmailJS Configuration
-const EMAILJS_PUBLIC_KEY = 'B66GW10zQgaxWqkUV';
-const EMAILJS_SERVICE_ID = 'service_dwpmhpx';
-const EMAILJS_TEMPLATE_APPROVAL = 'template_vks7uva';
-const EMAILJS_TEMPLATE_NOTIFY = 'template_saoqx7a';
-const ADMIN_EMAIL = 'patrick@federi.com';
+import { EMAILJS_PUBLIC_KEY, EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_APPROVAL, EMAILJS_TEMPLATE_NOTIFY, ADMIN_EMAIL } from './emailjs-config.js';
 
 // Initialize EmailJS
 if (window.emailjs) {
   window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-  console.log('EmailJS initialized');
+  
 } else {
   console.warn('EmailJS SDK not loaded');
 }
@@ -37,8 +31,6 @@ async function sendApprovalEmail(supporter) {
     console.error('EmailJS not available');
     return;
   }
-
-  console.log('Sending approval email to:', supporter.email, 'name:', supporter.name);
 
   try {
     const result = await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_APPROVAL, {
@@ -50,7 +42,6 @@ async function sendApprovalEmail(supporter) {
       supporter_message: supporter.message || '–',
       website_url: 'https://responsible.pumpfoiling.community'
     });
-    console.log('Approval email sent successfully:', result);
   } catch (error) {
     console.error('Failed to send approval email:', error);
     showToast('E-Mail konnte nicht gesendet werden: ' + (error?.text || error?.message || error), 'error');
@@ -63,8 +54,6 @@ async function sendNotificationEmail(name, link, email, message) {
     return;
   }
 
-  console.log('Sending notification email to admin about:', name);
-
   try {
     const result = await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_NOTIFY, {
       to_email: ADMIN_EMAIL,
@@ -76,7 +65,7 @@ async function sendNotificationEmail(name, link, email, message) {
       supporter_message: message || '–',
       website_url: 'https://responsible.pumpfoiling.community/admin'
     });
-    console.log('Notification email sent successfully:', result);
+    
   } catch (error) {
     console.error('Failed to send notification email:', error);
   }
@@ -98,19 +87,21 @@ const TOAST_BORDERS = {
   info: 'border-blue-400 dark:border-blue-600'
 };
 
+function escHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
 function showToast(message, type = 'info', duration = 4000) {
   const container = document.getElementById('toast-container');
   if (!container) return;
 
   const toast = document.createElement('div');
   toast.className = `pointer-events-auto flex items-start gap-3 px-4 py-3 bg-white dark:bg-gray-800 border-l-4 ${TOAST_BORDERS[type]} rounded-lg shadow-lg toast-enter`;
-  toast.innerHTML = `
-    <div class="flex-shrink-0 mt-0.5">${TOAST_ICONS[type]}</div>
-    <p class="text-sm text-gray-800 dark:text-gray-200 flex-1">${message}</p>
-    <button class="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 ml-2" onclick="this.closest('.pointer-events-auto').remove()">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-    </button>
-  `;
+  const closeBtn = '<button class="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 ml-2" onclick="this.closest(\'.pointer-events-auto\').remove()"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>';
+  toast.innerHTML = `<div class="flex-shrink-0 mt-0.5">${TOAST_ICONS[type]}</div><p class="text-sm text-gray-800 dark:text-gray-200 flex-1"></p>${closeBtn}`;
+  toast.querySelector('p').textContent = message;
   container.appendChild(toast);
 
   setTimeout(() => {
@@ -414,12 +405,6 @@ async function loadSupporters() {
   try {
     const supporters = await loadSupportersFromDb();
     
-    console.log('Loaded supporters from DB:', supporters.map(s => ({
-      name: s.name,
-      logoPath: s.logoPath,
-      hasLogo: !!s.logoPath && s.logoPath.trim() !== ''
-    }))); // Debug log
-    
     // Update count
     if (supportersCount) {
       supportersCount.textContent = supporters.length;
@@ -441,12 +426,6 @@ async function loadSupporters() {
     if (supportersList) {
       supportersList.innerHTML = '';
       supporters.forEach(supporter => {
-        console.log('Creating card for supporter:', {
-          name: supporter.name,
-          id: supporter.id,
-          logoPath: supporter.logoPath,
-          link: supporter.link
-        }); // Debug log
         const item = createSupporterItem(supporter);
         supportersList.appendChild(item);
       });
@@ -537,7 +516,7 @@ async function saveNewOrder(grid) {
     await Promise.all(
       updates.map(({ id, order }) => updateSupporterInDb(id, { order }))
     );
-    console.log('Supporter order saved');
+    
   } catch (error) {
     console.error('Error saving order:', error);
     showToast('Fehler beim Speichern der Reihenfolge.', 'error');
@@ -571,36 +550,25 @@ function createSupporterItem(supporter) {
     if (logoUrl.includes('firebasestorage.googleapis.com') || 
         logoUrl.includes('firebasestorage') ||
         (logoUrl.startsWith('https://') && logoUrl.includes('storage'))) {
-      // Already a full Firebase Storage URL, use as is
-      console.log('Using Firebase Storage URL for', supporter.name, ':', logoUrl);
-    } 
-    // Other HTTPS URLs
+    }
     else if (logoUrl.startsWith('https://') || logoUrl.startsWith('http://')) {
-      // Already a full URL, use as is
-      console.log('Using full URL for', supporter.name, ':', logoUrl);
     }
-    // Relative paths from src/images
     else if (logoUrl.startsWith('src/') || logoUrl.startsWith('./src/')) {
-      // Already formatted correctly
-      console.log('Using relative path for', supporter.name, ':', logoUrl);
     }
-    // Paths without src prefix - assume it's a relative path
     else if (!logoUrl.startsWith('/')) {
-      // Add ./ prefix for relative paths
       logoUrl = './' + logoUrl;
-      console.log('Added ./ prefix for', supporter.name, ':', logoUrl);
     }
   }
   
-  console.log('Final logo URL for', supporter.name, ':', logoUrl || 'NO LOGO');
-  
+  const safeName = escHtml(supporter.name);
+  const safeLink = escHtml(supporter.link);
+  const safeLogo = logoUrl ? escHtml(logoUrl) : '';
   item.innerHTML = `
     <div class="p-6">
-      <!-- Logo Container -->
       <div class="aspect-square flex items-center justify-center mb-4 bg-gray-50 dark:bg-gray-700 rounded-lg p-4 min-h-[200px] relative">
-        ${logoUrl ? `
-          <img src="${logoUrl}" 
-               alt="${supporter.name}" 
+        ${safeLogo ? `
+          <img src="${safeLogo}" 
+               alt="${safeName}" 
                class="max-w-full max-h-full object-contain"
                onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<span style=&quot;color:#9ca3af;font-size:0.875rem&quot;>Logo nicht verfügbar</span>';"
                loading="lazy">
@@ -611,15 +579,14 @@ function createSupporterItem(supporter) {
         `}
       </div>
       
-      <!-- Content -->
       <div class="text-center">
-        <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-2 text-lg">${supporter.name}</h3>
-        <a href="${supporter.link}" 
+        <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-2 text-lg">${safeName}</h3>
+        <a href="${safeLink}" 
            target="_blank" 
            rel="noopener noreferrer" 
            onclick="event.stopPropagation();"
            class="text-sm text-blue-600 dark:text-blue-400 hover:underline inline-block break-all">
-          ${supporter.link.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+          ${escHtml(supporter.link.replace(/^https?:\/\//, '').replace(/\/$/, ''))}
         </a>
       </div>
       
@@ -695,8 +662,7 @@ window.editSupporter = async function(id) {
       const preview = document.getElementById('logo-preview');
       if (preview) {
         if (supporter.logoPath && supporter.logoPath.trim() !== '') {
-          console.log('Showing logo preview:', supporter.logoPath);
-          preview.innerHTML = `<img src="${supporter.logoPath}" alt="Logo Preview" class="max-w-[200px] max-h-[200px] border border-gray-300 dark:border-gray-600 rounded-md p-4 bg-white dark:bg-gray-800" onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<span style=&quot;color:#9ca3af;font-size:0.875rem&quot;>Logo konnte nicht geladen werden</span>';">`;
+          preview.innerHTML = `<img src="${escHtml(supporter.logoPath)}" alt="Logo Preview" class="max-w-[200px] max-h-[200px] border border-gray-300 dark:border-gray-600 rounded-md p-4 bg-white dark:bg-gray-800" onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<span style=&quot;color:#9ca3af;font-size:0.875rem&quot;>Logo konnte nicht geladen werden</span>';">`;
         } else {
           preview.innerHTML = '';
         }
@@ -1016,25 +982,29 @@ async function loadPendingSupporters() {
         ? item.createdAt.toDate().toLocaleDateString('de-CH')
         : 'Unbekannt';
 
+      const sn = escHtml(item.name);
+      const sl = escHtml(item.link);
+      const se = escHtml(item.email);
+      const sLogo = item.logoPath ? escHtml(item.logoPath) : '';
       card.innerHTML = `
         <div class="p-5">
           <div class="aspect-square flex items-center justify-center mb-3 bg-gray-50 dark:bg-gray-700 rounded-lg p-4 min-h-[160px]">
-            ${item.logoPath
-              ? `<img src="${item.logoPath}" alt="${item.name}" class="max-w-full max-h-full object-contain" loading="lazy"
+            ${sLogo
+              ? `<img src="${sLogo}" alt="${sn}" class="max-w-full max-h-full object-contain" loading="lazy"
                    onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<span style=&quot;color:#9ca3af;font-size:0.875rem&quot;>Logo nicht verfügbar</span>';">`
               : `<span class="text-gray-400 text-sm">Kein Logo</span>`}
           </div>
-          <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-lg mb-1">${item.name}</h4>
-          <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="text-sm text-blue-600 dark:text-blue-400 hover:underline break-all">${item.link.replace(/^https?:\/\//, '').replace(/\/$/, '')}</a>
+          <h4 class="font-semibold text-gray-900 dark:text-gray-100 text-lg mb-1">${sn}</h4>
+          <a href="${sl}" target="_blank" rel="noopener noreferrer" class="text-sm text-blue-600 dark:text-blue-400 hover:underline break-all">${escHtml(item.link.replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-            ${item.email} &middot; ${date}
+            ${se} &middot; ${escHtml(date)}
           </p>
-          ${item.message ? `<p class="text-sm text-gray-600 dark:text-gray-300 mt-2 italic border-l-2 border-gray-300 dark:border-gray-600 pl-2">${item.message}</p>` : ''}
+          ${item.message ? `<p class="text-sm text-gray-600 dark:text-gray-300 mt-2 italic border-l-2 border-gray-300 dark:border-gray-600 pl-2">${escHtml(item.message)}</p>` : ''}
           <div class="flex gap-2 mt-4">
-            <button onclick="handleApprove('${item.id}')" class="flex-1 px-3 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors">
+            <button onclick="handleApprove('${escHtml(item.id)}')" class="flex-1 px-3 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors">
               Freigeben
             </button>
-            <button onclick="handleReject('${item.id}')" class="flex-1 px-3 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors">
+            <button onclick="handleReject('${escHtml(item.id)}')" class="flex-1 px-3 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors">
               Ablehnen
             </button>
           </div>
@@ -1213,12 +1183,6 @@ function renderSignatoriesTable() {
       pagesEl.innerHTML = html;
     }
   }
-}
-
-function escHtml(str) {
-  const d = document.createElement('div');
-  d.textContent = str || '';
-  return d.innerHTML;
 }
 
 window.goToSignatoryPage = function(page) {

@@ -1,9 +1,25 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { saveSignatoryToDb, loadSignatoriesFromDb, checkSignatoryExists, loadSupportersFromDb, savePendingSupporterToDb } from './db.js';
+import { EMAILJS_PUBLIC_KEY, EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_NOTIFY, ADMIN_EMAIL } from './emailjs-config.js';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
+
+// --- Shared Utilities ---
+
+const LOCALE_MAP = { de: 'de-DE', en: 'en-US', fr: 'fr-FR', it: 'it-IT' };
+
+function escHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function debounce(fn, ms = 250) {
+  let timer;
+  return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms); };
+}
 
 // --- Toast Notifications ---
 
@@ -21,13 +37,10 @@ function showToast(message, type = 'info', duration = 4500) {
   const toast = document.createElement('div');
   toast.className = `toast-item ${type}`;
   toast.style.setProperty('--toast-duration', `${duration / 1000}s`);
-  toast.innerHTML = `
-    ${TOAST_SVG[type] || TOAST_SVG.info}
-    <p>${message}</p>
-    <button class="toast-close" onclick="this.closest('.toast-item').remove()">
-      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-    </button>
-  `;
+  const iconHtml = TOAST_SVG[type] || TOAST_SVG.info;
+  const closeBtn = '<button class="toast-close" onclick="this.closest(\'.toast-item\').remove()"><svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>';
+  toast.innerHTML = `${iconHtml}<p></p>${closeBtn}`;
+  toast.querySelector('p').textContent = message;
   container.appendChild(toast);
 
   setTimeout(() => {
@@ -134,9 +147,12 @@ function initCustomCursor() {
   
   if (!cursor) return;
   
+  let cursorRaf;
   document.addEventListener('mousemove', (e) => {
-    cursor.style.left = `${e.clientX}px`;
-    cursor.style.top = `${e.clientY}px`;
+    if (cursorRaf) cancelAnimationFrame(cursorRaf);
+    cursorRaf = requestAnimationFrame(() => {
+      cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+    });
   });
   
   document.addEventListener('mousedown', () => {
@@ -389,34 +405,6 @@ function initToggle() {
   });
 }
 
-// Function to verify reCAPTCHA token with server (optional but recommended)
-async function verifyRecaptchaToken(token) {
-  try {
-    // In production, you'd verify this token with Google's servers
-    // This is a placeholder for that verification
-    // Normally you'd make a POST request to your server, which would then verify with Google
-    
-    // Simulated successful verification
-    return true;
-    
-    // Example of actual implementation:
-    /*
-    const response = await fetch('/verify-recaptcha', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ token })
-    });
-    
-    const result = await response.json();
-    return result.success;
-    */
-  } catch (error) {
-    console.error('Error verifying reCAPTCHA token:', error);
-    return false;
-  }
-}
 
 // Initialize form handling
 function initForm() {
@@ -445,7 +433,7 @@ function initForm() {
     } else {
       const honeypotValue = honeypotField.value;
       if (honeypotValue) {
-        console.log('Spam detected: Honeypot field filled');
+        
         return false;
       }
     }
@@ -462,14 +450,14 @@ function initForm() {
     const TIME_THRESHOLD = 3000; // 3 seconds
     
     if (submissionTime - pageLoadTime < TIME_THRESHOLD) {
-      console.log('Spam detected: Form submitted too quickly');
+      
       showToast(t('toast_spam_wait'), 'warning');
       return false;
     }
     
     // Spam protection: Check submission count
     if (submissionCount >= MAX_SUBMISSIONS_PER_SESSION) {
-      console.log('Spam detected: Too many submissions in this session');
+      
       showToast(t('toast_already_signed'), 'info');
       return false;
     }
@@ -548,13 +536,13 @@ function capitalizeFirstLetter(name) {
 // Extract form submission processing to a separate function
 async function processFormSubmission(form, name, location, submitButton, originalText, signatoriesList) {
   try {
-    console.log(`Attempting to save signature for ${name} from ${location}`);
+    
     
     // Check if the signatory already exists in the database
     const exists = await checkSignatoryExists(name, location);
     
     if (exists) {
-      console.log(`Signature already exists for ${name} from ${location}`);
+      
       showToast(t('toast_duplicate_entry'), 'warning');
       submitButton.disabled = false;
       submitButton.textContent = originalText;
@@ -563,7 +551,7 @@ async function processFormSubmission(form, name, location, submitButton, origina
     
     // Save to Firestore database
     const signatory = await saveSignatoryToDb(name, location);
-    console.log(`Successfully saved signature to Firestore: ${name} from ${location}`);
+    
     
     // Increment submission counter in session storage
     const submissionCount = parseInt(sessionStorage.getItem('submissionCount') || '0');
@@ -577,25 +565,18 @@ async function processFormSubmission(form, name, location, submitButton, origina
     
     // Format the actual creation date from the signatory object
     const currentLang = document.documentElement.getAttribute('lang') || 'de';
-    const localeMap = {
-      'de': 'de-DE',
-      'en': 'en-US', 
-      'fr': 'fr-FR',
-      'it': 'it-IT'
-    };
-    
     // Use the actual creation date from the database response
     const creationDate = signatory.date ? new Date(signatory.date) : new Date();
-    const formattedDate = creationDate.toLocaleDateString(localeMap[currentLang] || 'de-DE', {
+    const formattedDate = creationDate.toLocaleDateString(LOCALE_MAP[currentLang] || 'de-DE', {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
     });
     
     newSignatory.innerHTML = `
-      <div class="signatory-name">${capitalizeFirstLetter(name)}</div>
-      <div class="signatory-location">${location}</div>
-      <div class="signatory-date">${formattedDate}</div>
+      <div class="signatory-name">${escHtml(capitalizeFirstLetter(name))}</div>
+      <div class="signatory-location">${escHtml(location)}</div>
+      <div class="signatory-date">${escHtml(formattedDate)}</div>
       <div class="new-banner" data-i18n="new_banner">New</div>
     `;
     
@@ -675,13 +656,13 @@ async function loadSignatories() {
   signatoriesList.innerHTML = '<div class="loading">Signatories laden...</div>';
   
   try {
-    console.log("Attempting to load signatories from Firestore...");
+    
     
     // First try to load from Firestore
     let dbSignatories = [];
     try {
       dbSignatories = await loadSignatoriesFromDb();
-      console.log(`Firestore returned ${dbSignatories?.length || 0} signatories`);
+      
     } catch (firebaseError) {
       console.error('Firebase error:', firebaseError);
       dbSignatories = [];
@@ -689,18 +670,18 @@ async function loadSignatories() {
     
     // Wenn wir Daten aus der Firestore bekommen haben, verwenden wir diese
     if (dbSignatories && dbSignatories.length > 0) {
-      console.log('Displaying signatures from Firestore database');
+      
       displaySignatories(dbSignatories);
     } else {
       // No data from Firestore, show empty state
-      console.log('No signatures found in Firestore, showing empty state');
+      
       signatoriesList.innerHTML = '<div class="no-signatories">Noch keine Unterschriften. Sei der Erste, der den Code of Conduct unterzeichnet!</div>';
     }
   } catch (error) {
     console.error('Error in loadSignatories function:', error);
     
     // Show error state
-    console.log('Error occurred while loading signatures, showing error message');
+    
     signatoriesList.innerHTML = '<div class="error-message">Es gab ein Problem beim Laden der Unterschriften. Bitte versuchen Sie es später erneut.</div>';
   }
 }
@@ -736,14 +717,6 @@ function applyTranslationsToNewElements(lang) {
 
 // Helper function to update signature dates when language changes
 function updateSignatureDates(lang) {
-  // Don't reload signatories on language change to avoid multiple load more buttons
-  // Instead, just update the existing date elements by re-formatting them in the new language
-  const localeMap = {
-    'de': 'de-DE',
-    'en': 'en-US', 
-    'fr': 'fr-FR',
-    'it': 'it-IT'
-  };
   
   // Update existing signature dates by re-formatting them
   document.querySelectorAll('.signatory').forEach(signatoryElement => {
@@ -793,7 +766,7 @@ function updateSignatureDates(lang) {
       }
       
       // Format the date in the new language
-      const formattedDate = originalDate.toLocaleDateString(localeMap[lang] || 'de-DE', {
+      const formattedDate = originalDate.toLocaleDateString(LOCALE_MAP[lang] || 'de-DE', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
@@ -993,15 +966,7 @@ function displaySignatories(signatories) {
             // Get current language
             const currentLang = document.documentElement.getAttribute('lang') || 'de';
             
-            // Format with written month names based on language
-            const localeMap = {
-              'de': 'de-DE',
-              'en': 'en-US', 
-              'fr': 'fr-FR',
-              'it': 'it-IT'
-            };
-            
-            return date.toLocaleDateString(localeMap[currentLang] || 'de-DE', {
+            return date.toLocaleDateString(LOCALE_MAP[currentLang] || 'de-DE', {
               day: 'numeric',
               month: 'long',
               year: 'numeric'
@@ -1011,9 +976,9 @@ function displaySignatories(signatories) {
           const formattedDate = formatSignatureDate(signatory);
           
           signatoryElement.innerHTML = `
-            <div class="signatory-name">${capitalizeFirstLetter(signatory.name) || 'Unbekannt'}</div>
-            <div class="signatory-location">${signatory.location || 'Unbekannt'}</div>
-            ${formattedDate ? `<div class="signatory-date">${formattedDate}</div>` : ''}
+            <div class="signatory-name">${escHtml(capitalizeFirstLetter(signatory.name) || 'Unbekannt')}</div>
+            <div class="signatory-location">${escHtml(signatory.location || 'Unbekannt')}</div>
+            ${formattedDate ? `<div class="signatory-date">${escHtml(formattedDate)}</div>` : ''}
             ${isNew ? '<div class="new-banner" data-i18n="new_banner">New</div>' : ''}
           `;
           
@@ -1385,41 +1350,33 @@ function initMobileMenu() {
   
   if (!menuToggle || !mainNav || !overlay) return;
   
-  // Toggle menu on hamburger click
+  function closeMenu() {
+    menuToggle.classList.remove('active');
+    menuToggle.setAttribute('aria-expanded', 'false');
+    mainNav.classList.remove('active');
+    overlay.classList.remove('active');
+    document.body.classList.remove('no-scroll');
+  }
+
   menuToggle.addEventListener('click', () => {
-    menuToggle.classList.toggle('active');
+    const isOpen = menuToggle.classList.toggle('active');
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
     mainNav.classList.toggle('active');
     overlay.classList.toggle('active');
     document.body.classList.toggle('no-scroll');
   });
   
-  // Close menu when overlay is clicked
-  overlay.addEventListener('click', () => {
-    menuToggle.classList.remove('active');
-    mainNav.classList.remove('active');
-    overlay.classList.remove('active');
-    document.body.classList.remove('no-scroll');
-  });
+  overlay.addEventListener('click', closeMenu);
   
-  // Close menu when a nav link is clicked
   navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      menuToggle.classList.remove('active');
-      mainNav.classList.remove('active');
-      overlay.classList.remove('active');
-      document.body.classList.remove('no-scroll');
-    });
+    link.addEventListener('click', closeMenu);
   });
   
-  // Close menu on window resize (if desktop size)
-  window.addEventListener('resize', () => {
+  window.addEventListener('resize', debounce(() => {
     if (window.innerWidth > 992 && mainNav.classList.contains('active')) {
-      menuToggle.classList.remove('active');
-      mainNav.classList.remove('active');
-      overlay.classList.remove('active');
-      document.body.classList.remove('no-scroll');
+      closeMenu();
     }
-  });
+  }, 150));
 }
 
 // Add function to check and handle visibility for SVG drawing animation
@@ -1460,7 +1417,7 @@ function initSvgDrawing() {
 
 // Function to synchronize any pending uploads from localStorage to Firestore
 async function syncPendingUploads() {
-  console.log("Synchronizing with Firestore is now handled directly in the main code");
+  
   // Diese Funktion ist deaktiviert, da wir die Lokalspeicherung nicht mehr verwenden
   return;
 }
@@ -2093,9 +2050,9 @@ function initSupporterForm() {
       // Notify admin about new supporter request via EmailJS
       try {
         if (window.emailjs) {
-          window.emailjs.init({ publicKey: 'B66GW10zQgaxWqkUV' });
-          const result = await window.emailjs.send('service_dwpmhpx', 'template_saoqx7a', {
-            to_email: 'patrick@federi.com',
+          window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+          const result = await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_NOTIFY, {
+            to_email: ADMIN_EMAIL,
             to_name: 'Patrick',
             from_name: name,
             from_email: email,
@@ -2104,7 +2061,7 @@ function initSupporterForm() {
             supporter_message: message || '–',
             website_url: 'https://codeofconduct.ch/admin.html'
           });
-          console.log('Admin notification sent:', result);
+          
         }
       } catch (emailErr) {
         console.warn('Admin notification email failed:', emailErr);
@@ -2150,9 +2107,12 @@ async function loadSupporters() {
       supporters.forEach((supporter) => {
         const supporterItem = document.createElement('div');
         supporterItem.className = 'supporter-logo reveal-item';
+        const safeLink = escHtml(supporter.link);
+        const safeName = escHtml(supporter.name);
+        const safeLogo = escHtml(supporter.logoPath);
         supporterItem.innerHTML = `
-          <a href="${supporter.link}" target="_blank" rel="noopener noreferrer">
-            <img src="${supporter.logoPath}" alt="${supporter.name}" onerror="this.onerror=null; this.src='./src/images/logos/pfc-logo.png'">
+          <a href="${safeLink}" target="_blank" rel="noopener noreferrer">
+            <img src="${safeLogo}" alt="${safeName}" onerror="this.onerror=null; this.src='./src/images/logos/pfc-logo.png'">
           </a>
         `;
         fragment.appendChild(supporterItem);
@@ -2205,7 +2165,7 @@ async function loadSupporters() {
       }
     } else {
       // No supporters in Firestore, keep static ones
-      console.log('No supporters in Firestore, using static supporters');
+      
     }
     
   } catch (error) {
