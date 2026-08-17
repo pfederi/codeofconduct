@@ -393,7 +393,8 @@ a {
       // Ausrichtung nach Hintergrundbild, nicht nach Position im DOM
       &[style*="hero-3.jpg"],
       &[style*="hero-4.jpg"],
-      &[style*="hero-5.jpg"] {
+      &[style*="hero-5.jpg"],
+      &[style*="hero-6.jpg"] {
         @media (max-width: 992px) {
           background-position: right center;
         }
